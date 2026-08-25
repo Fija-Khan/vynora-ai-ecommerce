@@ -1,0 +1,44 @@
+/* =========================
+   VYNORA NAVBAR
+   Theme: Teal & Ivory
+   ========================= */
+
+.navbar {
+  width: 100%;
+  background: #0f766e;
+  border-bottom: 1px solid #0b5f59;
+}
+
+.navbar-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 18px 24px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.navbar-logo {
+  font-size: 26px;
+  font-weight: 700;
+  color: #faf7f0;
+  letter-spacing: 0.5px;
+}
+
+.navbar-links {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+
+.navbar-links a {
+  color: #faf7f0;
+  font-size: 15px;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.navbar-links a:hover {
+  color: #2dd4bf;
+}
