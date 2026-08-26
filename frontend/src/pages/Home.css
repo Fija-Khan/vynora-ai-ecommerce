@@ -1,0 +1,503 @@
+/* =========================
+   VYNORA HOME PAGE
+   Theme: Teal & Ivory
+   ========================= */
+
+
+/* =========================
+   HERO SECTION
+   ========================= */
+
+.hero-section {
+  min-height: 620px;
+  background: #faf7f0;
+  display: flex;
+  align-items: center;
+}
+
+.hero-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 60px;
+  padding-top: 80px;
+  padding-bottom: 80px;
+}
+
+.hero-content {
+  max-width: 600px;
+}
+
+.hero-badge {
+  display: inline-block;
+  padding: 8px 16px;
+  margin-bottom: 20px;
+  background: #dff5f1;
+  color: #0f766e;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.hero-content h1 {
+  margin: 0 0 20px;
+  color: #1f2933;
+  font-size: 58px;
+  line-height: 1.1;
+  font-weight: 700;
+  letter-spacing: -1px;
+}
+
+.hero-content p {
+  max-width: 520px;
+  margin-bottom: 30px;
+  color: #5f6b6a;
+  font-size: 18px;
+  line-height: 1.7;
+}
+
+.hero-buttons {
+  display: flex;
+  gap: 15px;
+}
+
+.hero-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 13px 24px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 600;
+  transition: all 0.25s ease;
+}
+
+.primary-btn {
+  background: #0f766e;
+  color: #faf7f0;
+  border: 1px solid #0f766e;
+}
+
+.primary-btn:hover {
+  background: #0b5f59;
+  border-color: #0b5f59;
+  color: #faf7f0;
+  transform: translateY(-2px);
+}
+
+.secondary-btn {
+  background: transparent;
+  color: #0f766e;
+  border: 1px solid #0f766e;
+}
+
+.secondary-btn:hover {
+  background: #0f766e;
+  color: #faf7f0;
+  transform: translateY(-2px);
+}
+
+
+/* =========================
+   AI RECOMMENDATION CARD
+   ========================= */
+
+.hero-visual {
+  width: 420px;
+  min-height: 420px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-card {
+  width: 320px;
+  padding: 35px;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 20px 50px rgba(15, 118, 110, 0.12);
+  transition: all 0.3s ease;
+}
+
+.hero-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 25px 60px rgba(15, 118, 110, 0.18);
+}
+
+.ai-label {
+  color: #0f766e;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.hero-card h3 {
+  margin: 15px 0 10px;
+  color: #1f2933;
+  font-size: 26px;
+  font-weight: 700;
+}
+
+.hero-card p {
+  margin: 0;
+  color: #6b7280;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+
+/* =========================
+   CATEGORIES SECTION
+   ========================= */
+
+.categories-section {
+  padding: 90px 0;
+  background: #ffffff;
+}
+
+.section-heading {
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+.section-heading span {
+  display: inline-block;
+  margin-bottom: 10px;
+  color: #0f766e;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.section-heading h2 {
+  margin: 0 0 12px;
+  color: #1f2933;
+  font-size: 38px;
+  font-weight: 700;
+}
+
+.section-heading p {
+  margin: 0;
+  color: #6b7280;
+  font-size: 16px;
+}
+
+
+/* =========================
+   CATEGORY GRID
+   ========================= */
+
+.categories-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 22px;
+}
+
+
+/* =========================
+   CATEGORY CARD
+   ========================= */
+
+.category-card {
+  overflow: hidden;
+  background: #faf7f0;
+  border: 1px solid #e8e4dc;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+.category-card:hover {
+  background: #ffffff;
+  border-color: #0f766e;
+  transform: translateY(-6px);
+  box-shadow: 0 15px 35px rgba(15, 118, 110, 0.12);
+}
+
+
+/* =========================
+   CATEGORY IMAGE
+   ========================= */
+
+.category-image {
+  width: 100%;
+  height: 190px;
+  overflow: hidden;
+  background: #e8e4dc;
+}
+
+.category-image img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.category-card:hover .category-image img {
+  transform: scale(1.06);
+}
+
+
+/* =========================
+   CATEGORY CONTENT
+   ========================= */
+
+.category-content {
+  padding: 24px;
+}
+
+.category-content h3 {
+  margin: 0 0 10px;
+  color: #1f2933;
+  font-size: 21px;
+  font-weight: 700;
+}
+
+.category-content p {
+  margin: 0 0 20px;
+  color: #6b7280;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.category-content a {
+  color: #0f766e;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.25s ease;
+}
+
+.category-content a:hover {
+  color: #0b5f59;
+}
+
+
+/* =========================
+   TABLET RESPONSIVE
+   ========================= */
+
+@media (max-width: 992px) {
+
+  .hero-container {
+    gap: 40px;
+  }
+
+  .hero-content h1 {
+    font-size: 48px;
+  }
+
+  .hero-visual {
+    width: 360px;
+  }
+
+  .categories-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+}
+
+
+/* =========================
+   MOBILE RESPONSIVE
+   ========================= */
+
+@media (max-width: 768px) {
+
+  .hero-section {
+    min-height: auto;
+  }
+
+  .hero-container {
+    flex-direction: column;
+    text-align: center;
+    padding-top: 60px;
+    padding-bottom: 60px;
+  }
+
+  .hero-content {
+    max-width: 100%;
+  }
+
+  .hero-content h1 {
+    font-size: 42px;
+  }
+
+  .hero-content p {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .hero-buttons {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .hero-visual {
+    width: 100%;
+    min-height: auto;
+  }
+
+  .hero-card {
+    width: 100%;
+    max-width: 320px;
+  }
+
+  .categories-section {
+    padding: 65px 0;
+  }
+
+  .section-heading h2 {
+    font-size: 32px;
+  }
+
+  .categories-grid {
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .category-card {
+    width: 100%;
+  }
+
+  .category-image {
+    height: 220px;
+  }
+
+}
+
+
+/* =========================
+   SMALL MOBILE
+   ========================= */
+
+@media (max-width: 480px) {
+
+  .hero-content h1 {
+    font-size: 36px;
+  }
+
+  .hero-content p {
+    font-size: 16px;
+  }
+
+  .hero-buttons {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .hero-btn {
+    width: 100%;
+  }
+
+  .section-heading h2 {
+    font-size: 28px;
+  }
+
+  .category-image {
+    height: 200px;
+  }
+  
+
+}
+
+
+
+
+
+
+
+/* =========================
+   FEATURED PRODUCTS
+   ========================= */
+
+.featured-products-section {
+  padding: 80px 0;
+  background: #faf7f0;
+}
+
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+
+.product-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.product-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+}
+
+.product-image {
+  width: 100%;
+  height: 240px;
+  overflow: hidden;
+  background: #f5f5f5;
+}
+
+.product-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 15px;
+  display: block;
+}
+
+.product-info {
+  padding: 20px;
+}
+
+.product-category {
+  font-size: 13px;
+  color: #0f766e;
+  font-weight: 600;
+}
+
+.product-info h3 {
+  margin: 8px 0;
+  font-size: 18px;
+  color: #1f2937;
+}
+
+.product-price {
+  font-size: 18px;
+  font-weight: 700;
+  color: #0f766e;
+  margin-bottom: 16px;
+}
+
+.product-btn {
+  display: inline-block;
+  padding: 10px 16px;
+  background: #0f766e;
+  color: #ffffff;
+  text-decoration: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.product-btn:hover {
+  background: #0b5f59;
+  color: #ffffff;
+}
+
+.view-all-products {
+  text-align: center;
+  margin-top: 35px;
+}
+
+.view-all-products a {
+  color: #0f766e;
+  font-weight: 600;
+  text-decoration: none;
+}

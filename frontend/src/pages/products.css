@@ -1,0 +1,204 @@
+/* =========================
+   VYNORA PRODUCTS PAGE
+   Theme: Teal & Ivory
+   ========================= */
+
+.products-page {
+  min-height: 100vh;
+  background: #faf7f0;
+}
+
+/* =========================
+   PRODUCTS HEADER
+   ========================= */
+
+.products-header {
+  padding: 70px 0 50px;
+  text-align: center;
+  background: #faf7f0;
+}
+
+.products-header span {
+  color: #0f766e;
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+
+.products-header h1 {
+  margin: 10px 0;
+  color: #1f2937;
+  font-size: 42px;
+  font-weight: 700;
+}
+
+.products-header p {
+  margin: 0;
+  color: #6b7280;
+  font-size: 16px;
+}
+
+/* =========================
+   PRODUCTS SECTION
+   ========================= */
+
+.products-list-section {
+  padding: 20px 0 80px;
+}
+
+/* =========================
+   PRODUCT GRID
+   ========================= */
+
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+
+/* =========================
+   PRODUCT CARD
+   ========================= */
+
+.product-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: transform 0.3s ease,
+              box-shadow 0.3s ease;
+}
+
+.product-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
+}
+
+/* =========================
+   PRODUCT IMAGE
+   ========================= */
+
+.product-image {
+  width: 100%;
+  height: 260px;
+  background: #f5f5f5;
+  overflow: hidden;
+}
+
+.product-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 18px;
+  display: block;
+}
+
+.product-image-placeholder {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #9ca3af;
+}
+
+/* =========================
+   PRODUCT INFO
+   ========================= */
+
+.product-info {
+  padding: 20px;
+}
+
+.product-category {
+  display: inline-block;
+  margin-bottom: 7px;
+  color: #0f766e;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.product-info h3 {
+  margin: 0 0 10px;
+  color: #1f2937;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.product-price {
+  margin: 0 0 8px;
+  color: #0f766e;
+  font-size: 19px;
+  font-weight: 700;
+}
+
+.product-stock {
+  margin-bottom: 18px;
+  color: #6b7280;
+  font-size: 13px;
+}
+
+/* =========================
+   VIEW DETAILS BUTTON
+   ========================= */
+
+.product-btn {
+  display: inline-block;
+  width: 100%;
+  padding: 11px 16px;
+  background: #0f766e;
+  color: #ffffff;
+  border-radius: 7px;
+  text-align: center;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  transition: background 0.3s ease;
+}
+
+.product-btn:hover {
+  background: #0b5f59;
+  color: #ffffff;
+}
+
+/* =========================
+   MESSAGES
+   ========================= */
+
+.products-message {
+  padding: 40px 0;
+  color: #6b7280;
+  text-align: center;
+}
+
+/* =========================
+   RESPONSIVE
+   ========================= */
+
+@media (max-width: 992px) {
+  .products-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .products-header h1 {
+    font-size: 36px;
+  }
+}
+
+@media (max-width: 576px) {
+  .products-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .products-header {
+    padding: 50px 0 35px;
+  }
+
+  .products-header h1 {
+    font-size: 30px;
+  }
+
+  .product-image {
+    height: 240px;
+  }
+}

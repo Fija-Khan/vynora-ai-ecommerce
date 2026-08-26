@@ -3,42 +3,92 @@
    Theme: Teal & Ivory
    ========================= */
 
-.navbar {
+.vynora-navbar {
   width: 100%;
   background: #0f766e;
   border-bottom: 1px solid #0b5f59;
 }
 
-.navbar-container {
+.vynora-navbar-container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 18px 24px;
-
+  padding: 16px 24px;
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
 
-.navbar-logo {
+/* Logo */
+
+.vynora-logo {
   font-size: 26px;
   font-weight: 700;
   color: #faf7f0;
   letter-spacing: 0.5px;
+  text-decoration: none;
 }
 
-.navbar-links {
+/* Navigation */
+
+.vynora-links {
   display: flex;
   align-items: center;
-  gap: 28px;
+  gap: 10px;
 }
 
-.navbar-links a {
+/* Menu Boxes */
+
+.vynora-links .nav-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 82px;
+  height: 42px;
+
+  padding: 0 16px;
+
   color: #faf7f0;
+  background: transparent;
+
+  border: 1px solid transparent;
+  border-radius: 6px;
+
   font-size: 15px;
   font-weight: 500;
-  transition: color 0.3s ease;
+
+  text-decoration: none;
+
+  transition: all 0.25s ease;
 }
 
-.navbar-links a:hover {
-  color: #2dd4bf;
+/* Hover */
+
+.vynora-links .nav-link:hover {
+  background: #faf7f0;
+  color: #0f0f0f;
+  border-color: #faf7f0;
+  transform: translateY(-1px);
+}
+
+/* Active / Selected */
+
+.vynora-links .nav-link.active {
+  background: #faf7f0;
+  color: #0f766e;
+  border-color: #faf7f0;
+}
+
+/* Mobile Toggler */
+
+.vynora-toggler {
+  border-color: #faf7f0;
+}
+
+.vynora-toggler:focus {
+  box-shadow: none;
+}
+
+.vynora-toggler .navbar-toggler-icon {
+  filter: brightness(0) invert(1);
 }
