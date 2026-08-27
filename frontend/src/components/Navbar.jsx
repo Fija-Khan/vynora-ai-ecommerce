@@ -1,50 +1,175 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useState } from "react";
 
 function Navbar() {
-  return (
-    <nav className="navbar navbar-expand-lg vynora-navbar">
-      <div className="container vynora-navbar-container">
+  const navigate = useNavigate();
 
-        <Link to="/" className="navbar-brand vynora-logo">
-          Vynora
+  const [search, setSearch] = useState("");
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+
+    if (search.trim()) {
+      navigate(
+        `/products?search=${encodeURIComponent(search.trim())}`
+      );
+    }
+  };
+
+  return (
+    <nav className="vynora-navbar">
+      <div className="vynora-navbar-container">
+
+        {/* =========================
+            LOGO
+        ========================= */}
+
+        <Link to="/" className="vynora-logo">
+          VYNORA
         </Link>
 
+
+        {/* =========================
+            MOBILE MENU BUTTON
+        ========================= */}
+
         <button
-          className="navbar-toggler vynora-toggler"
+          className="vynora-menu-btn"
           type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarContent"
-          aria-controls="navbarContent"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
+          aria-label="Menu"
         >
-          <span className="navbar-toggler-icon"></span>
+          <span></span>
+          <span></span>
+          <span></span>
         </button>
 
-        <div className="collapse navbar-collapse" id="navbarContent">
-          <div className="navbar-nav ms-auto vynora-links">
 
-            <Link to="/" className="nav-link">
-              Home
+        {/* =========================
+            NAVBAR CONTENT
+        ========================= */}
+
+        <div className="vynora-navbar-content">
+
+          {/* =========================
+              CATEGORY LINKS
+          ========================= */}
+
+          <div className="vynora-category-links">
+
+            <Link
+              to="/products?gender=men"
+              className="vynora-nav-link"
+            >
+              MEN
             </Link>
 
-            <Link to="/products" className="nav-link">
-              Products
+            <Link
+              to="/products?gender=women"
+              className="vynora-nav-link"
+            >
+              WOMEN
             </Link>
 
-            <Link to="/wishlist" className="nav-link">
-              Wishlist
+            <Link
+              to="/products?gender=kids"
+              className="vynora-nav-link"
+            >
+              KIDS
             </Link>
 
-            <Link to="/cart" className="nav-link">
-              Cart
+            <Link
+              to="/products"
+              className="vynora-nav-link"
+            >
+              HOME
             </Link>
 
-            <Link to="/login" className="nav-link">
-              Login
+            <Link
+              to="/products"
+              className="vynora-nav-link"
+            >
+              BEAUTY
             </Link>
 
           </div>
+
+
+          {/* =========================
+              RIGHT SIDE
+          ========================= */}
+
+          <div className="vynora-right">
+
+            {/* SEARCH */}
+
+            <form
+              className="vynora-search"
+              onSubmit={handleSearch}
+            >
+              <span className="search-icon">
+                🔍
+              </span>
+
+              <input
+                type="text"
+                placeholder="Search products, brands..."
+                value={search}
+                onChange={(e) =>
+                  setSearch(e.target.value)
+                }
+              />
+            </form>
+
+
+            {/* PROFILE */}
+
+            <Link
+              to="/profile"
+              className="vynora-icon-link"
+            >
+              <span className="nav-icon">
+                👤
+              </span>
+
+              <span className="nav-icon-label">
+                Profile
+              </span>
+            </Link>
+
+
+            {/* WISHLIST */}
+
+            <Link
+              to="/wishlist"
+              className="vynora-icon-link"
+            >
+              <span className="nav-icon">
+                ♡
+              </span>
+
+              <span className="nav-icon-label">
+                Wishlist
+              </span>
+            </Link>
+
+
+            {/* CART */}
+
+            <Link
+              to="/cart"
+              className="vynora-icon-link"
+            >
+              <span className="nav-icon">
+                🛒
+              </span>
+
+              <span className="nav-icon-label">
+                Cart
+              </span>
+            </Link>
+
+          </div>
+
         </div>
 
       </div>

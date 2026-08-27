@@ -1,94 +1,386 @@
-/* =========================
+/* ========================================
    VYNORA NAVBAR
    Theme: Teal & Ivory
-   ========================= */
+   ======================================== */
 
 .vynora-navbar {
   width: 100%;
+  height: 72px;
   background: #0f766e;
   border-bottom: 1px solid #0b5f59;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-sizing: border-box;
 }
 
 .vynora-navbar-container {
-  max-width: 1200px;
+  width: 100%;
+  max-width: 1280px;
+  height: 100%;
   margin: 0 auto;
-  padding: 16px 24px;
+  padding: 0 28px;
+
+  display: flex;
+  align-items: center;
+  gap: 30px;
+
+  box-sizing: border-box;
+}
+
+
+/* ========================================
+   LOGO
+   ======================================== */
+
+.vynora-logo {
+  display: flex;
+  align-items: center;
+
+  color: #faf7f0;
+  text-decoration: none;
+
+  font-size: 25px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+
+  white-space: nowrap;
+}
+
+.vynora-logo:hover {
+  color: #ffffff;
+}
+
+
+/* ========================================
+   NAVBAR CONTENT
+   ======================================== */
+
+.vynora-navbar-content {
+  flex: 1;
+
   display: flex;
   align-items: center;
   justify-content: space-between;
+
+  min-width: 0;
 }
 
-/* Logo */
 
-.vynora-logo {
-  font-size: 26px;
-  font-weight: 700;
-  color: #faf7f0;
-  letter-spacing: 0.5px;
-  text-decoration: none;
-}
+/* ========================================
+   CATEGORY LINKS
+   ======================================== */
 
-/* Navigation */
-
-.vynora-links {
+.vynora-category-links {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 2px;
 }
 
-/* Menu Boxes */
+.vynora-nav-link {
+  position: relative;
 
-.vynora-links .nav-link {
   display: flex;
   align-items: center;
   justify-content: center;
 
-  min-width: 82px;
-  height: 42px;
-
-  padding: 0 16px;
+  height: 72px;
+  padding: 0 14px;
 
   color: #faf7f0;
-  background: transparent;
-
-  border: 1px solid transparent;
-  border-radius: 6px;
-
-  font-size: 15px;
-  font-weight: 500;
-
   text-decoration: none;
 
-  transition: all 0.25s ease;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+
+  transition: all 0.2s ease;
 }
 
-/* Hover */
+.vynora-nav-link::after {
+  content: "";
 
-.vynora-links .nav-link:hover {
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 8px;
+
+  height: 2px;
+
   background: #faf7f0;
-  color: #0f0f0f;
-  border-color: #faf7f0;
-  transform: translateY(-1px);
+
+  transform: scaleX(0);
+  transition: transform 0.2s ease;
 }
 
-/* Active / Selected */
+.vynora-nav-link:hover {
+  color: #ffffff;
+}
 
-.vynora-links .nav-link.active {
+.vynora-nav-link:hover::after {
+  transform: scaleX(1);
+}
+
+
+/* ========================================
+   RIGHT SECTION
+   ======================================== */
+
+.vynora-right {
+  display: flex;
+  align-items: center;
+
+  gap: 16px;
+  margin-left: 20px;
+}
+
+
+/* ========================================
+   SEARCH BAR
+   ======================================== */
+
+.vynora-search {
+  width: 270px;
+  height: 40px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+
+  padding: 0 13px;
+
+  background: #ffffff;
+
+  border: 1px solid #dedbd4;
+  border-radius: 5px;
+
+  box-sizing: border-box;
+}
+
+.search-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 15px;
+  color: #666666;
+}
+
+.vynora-search input {
+  width: 100%;
+  height: 100%;
+
+  border: none;
+  outline: none;
+
+  background: transparent;
+
+  font-size: 12px;
+  color: #222222;
+}
+
+.vynora-search input::placeholder {
+  color: #888888;
+}
+
+
+/* ========================================
+   PROFILE / WISHLIST / CART
+   ======================================== */
+
+.vynora-icon-link {
+  min-width: 54px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 2px;
+
+  color: #faf7f0;
+  text-decoration: none;
+
+  transition: opacity 0.2s ease;
+}
+
+.vynora-icon-link:hover {
+  color: #ffffff;
+  opacity: 0.85;
+}
+
+.nav-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  height: 22px;
+
+  font-size: 19px;
+  line-height: 1;
+}
+
+.nav-icon-label {
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 14px;
+}
+
+
+/* ========================================
+   MOBILE MENU BUTTON
+   ======================================== */
+
+.vynora-menu-btn {
+  display: none;
+
+  width: 42px;
+  height: 38px;
+
+  padding: 6px;
+
+  background: transparent;
+
+  border: 1px solid #faf7f0;
+  border-radius: 5px;
+
+  cursor: pointer;
+}
+
+.vynora-menu-btn span {
+  display: block;
+
+  width: 100%;
+  height: 2px;
+
+  margin: 5px 0;
+
   background: #faf7f0;
-  color: #0f766e;
-  border-color: #faf7f0;
 }
 
-/* Mobile Toggler */
 
-.vynora-toggler {
-  border-color: #faf7f0;
+/* ========================================
+   TABLET
+   ======================================== */
+
+@media (max-width: 1150px) {
+
+  .vynora-navbar-container {
+    padding: 0 18px;
+    gap: 18px;
+  }
+
+  .vynora-nav-link {
+    padding: 0 9px;
+    font-size: 12px;
+  }
+
+  .vynora-search {
+    width: 210px;
+  }
+
+  .vynora-right {
+    gap: 9px;
+    margin-left: 10px;
+  }
+
 }
 
-.vynora-toggler:focus {
-  box-shadow: none;
+
+/* ========================================
+   MOBILE
+   ======================================== */
+
+@media (max-width: 850px) {
+
+  .vynora-navbar {
+    height: auto;
+    min-height: 68px;
+  }
+
+  .vynora-navbar-container {
+    min-height: 68px;
+
+    padding: 12px 18px;
+
+    flex-wrap: wrap;
+  }
+
+  .vynora-menu-btn {
+    display: block;
+    margin-left: auto;
+  }
+
+  .vynora-navbar-content {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+
+    padding-bottom: 15px;
+  }
+
+  .vynora-category-links {
+    width: 100%;
+
+    flex-direction: column;
+
+    gap: 0;
+  }
+
+  .vynora-nav-link {
+    width: 100%;
+    height: 42px;
+
+    justify-content: center;
+  }
+
+  .vynora-nav-link::after {
+    display: none;
+  }
+
+  .vynora-right {
+    width: 100%;
+
+    margin: 12px 0 0;
+
+    display: flex;
+    flex-wrap: wrap;
+
+    justify-content: center;
+
+    gap: 15px;
+  }
+
+  .vynora-search {
+    width: 100%;
+
+    order: -1;
+  }
+
 }
 
-.vynora-toggler .navbar-toggler-icon {
-  filter: brightness(0) invert(1);
+
+/* ========================================
+   SMALL MOBILE
+   ======================================== */
+
+@media (max-width: 480px) {
+
+  .vynora-logo {
+    font-size: 22px;
+  }
+
+  .vynora-navbar-container {
+    padding: 11px 14px;
+  }
+
+  .vynora-right {
+    gap: 10px;
+  }
+
+  .vynora-icon-link {
+    min-width: 48px;
+  }
+
 }
