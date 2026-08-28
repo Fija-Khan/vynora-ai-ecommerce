@@ -36,6 +36,13 @@ class Product(models.Model):
         ("kids", "Kids"),
     ]
 
+    FIT_CHOICES = [
+        ("regular", "Regular Fit"),
+        ("slim", "Slim Fit"),
+        ("relaxed", "Relaxed Fit"),
+        ("oversized", "Oversized"),
+    ]
+
     category = models.ForeignKey(
         Category,
         on_delete=models.CASCADE,
@@ -64,6 +71,13 @@ class Product(models.Model):
 
     description = models.TextField()
 
+    # Pricing
+    mrp = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=0
+    )
+
     price = models.DecimalField(
         max_digits=10,
         decimal_places=2
@@ -73,14 +87,82 @@ class Product(models.Model):
         default=0
     )
 
+    # Product information
+    fit = models.CharField(
+        max_length=30,
+        choices=FIT_CHOICES,
+        blank=True
+    )
+
+    brand_fit = models.CharField(
+        max_length=50,
+        blank=True
+    )
+
+    material = models.CharField(
+        max_length=150,
+        blank=True
+    )
+
+    care = models.CharField(
+        max_length=200,
+        blank=True
+    )
+
+    sleeve_length = models.CharField(
+        max_length=100,
+        blank=True
+    )
+
+    collar = models.CharField(
+        max_length=100,
+        blank=True
+    )
+
+    length = models.CharField(
+        max_length=100,
+        blank=True
+    )
+
+    hemline = models.CharField(
+        max_length=100,
+        blank=True
+    )
+
+    placket = models.CharField(
+        max_length=100,
+        blank=True
+    )
+
+    placket_length = models.CharField(
+        max_length=100,
+        blank=True
+    )
+
+    # Product code
+    product_code = models.CharField(
+        max_length=50,
+        unique=True,
+        blank=True,
+        null=True
+    )
+
+    # Stock
     stock = models.PositiveIntegerField(
         default=0
     )
 
+    # Main image
     image = models.ImageField(
         upload_to="products/",
         blank=True,
         null=True
+    )
+
+    # Seller
+    seller = models.CharField(
+        max_length=150,
+        blank=True
     )
 
     is_active = models.BooleanField(
@@ -96,6 +178,7 @@ class Product(models.Model):
     )
 
     def save(self, *args, **kwargs):
+
         if not self.slug:
             self.slug = slugify(self.name)
 
@@ -127,7 +210,14 @@ class ProductVariant(models.Model):
         default=0
     )
 
+    image = models.ImageField(
+        upload_to="products/variants/",
+        blank=True,
+        null=True
+    )
+
     def __str__(self):
+
         variant = self.product.name
 
         if self.color:

@@ -1,0 +1,308 @@
+/* =========================================
+   VYNORA ORDER SUCCESS PAGE
+   Theme: Teal & Ivory
+   ========================================= */
+
+.order-success-page {
+  min-height: 100vh;
+  background: #f8f7f2;
+  padding: 70px 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: "Inter", Arial, sans-serif;
+  color: #173f3b;
+}
+
+.order-success-container {
+  width: 100%;
+  max-width: 720px;
+  background: #ffffff;
+  border: 1px solid #e4e8e5;
+  border-radius: 20px;
+  padding: 55px 60px;
+  text-align: center;
+  box-shadow: 0 18px 50px rgba(23, 63, 59, 0.08);
+}
+
+/* =========================================
+   SUCCESS ICON
+   ========================================= */
+
+.success-icon {
+  width: 78px;
+  height: 78px;
+  margin: 0 auto 24px;
+  border-radius: 50%;
+  background: #e7f4ef;
+  color: #17796f;
+  border: 2px solid #b9ddd5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 38px;
+  font-weight: 700;
+}
+
+/* =========================================
+   EYEBROW
+   ========================================= */
+
+.success-eyebrow {
+  display: inline-block;
+  margin-bottom: 14px;
+  color: #17796f;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+/* =========================================
+   HEADING
+   ========================================= */
+
+.order-success-container h1 {
+  margin: 0;
+  color: #173f3b;
+  font-size: 36px;
+  line-height: 1.2;
+  font-weight: 700;
+}
+
+.success-message {
+  max-width: 540px;
+  margin: 16px auto 30px;
+  color: #687875;
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+/* =========================================
+   ORDER ID
+   ========================================= */
+
+.order-number {
+  background: #f5f8f6;
+  border: 1px solid #e0e8e5;
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  text-align: left;
+}
+
+.order-number span {
+  color: #71817e;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.order-number strong {
+  color: #17796f;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+}
+
+/* =========================================
+   ORDER DETAILS
+   ========================================= */
+
+.success-details {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-top: 1px solid #e8ecea;
+  border-bottom: 1px solid #e8ecea;
+  margin-bottom: 28px;
+}
+
+.success-details > div {
+  padding: 20px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.success-details > div + div {
+  border-left: 1px solid #e8ecea;
+}
+
+.success-details span {
+  color: #7b8885;
+  font-size: 12px;
+}
+
+.success-details strong {
+  color: #173f3b;
+  font-size: 15px;
+}
+
+/* =========================================
+   DELIVERY ADDRESS
+   ========================================= */
+
+.success-address {
+  background: #fafbf9;
+  border: 1px solid #e5eae7;
+  border-radius: 14px;
+  padding: 22px 24px;
+  margin-bottom: 28px;
+  text-align: left;
+}
+
+.success-address h3 {
+  margin: 0 0 12px;
+  color: #173f3b;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.success-address p {
+  margin: 0;
+  color: #667572;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.success-address strong {
+  color: #173f3b;
+}
+
+/* =========================================
+   BUTTON
+   ========================================= */
+
+.success-actions {
+  display: flex;
+  justify-content: center;
+}
+
+.success-btn {
+  border: none;
+  background: #17796f;
+  color: #ffffff;
+  min-width: 220px;
+  padding: 14px 24px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  transition: all 0.25s ease;
+}
+
+.success-btn span {
+  font-size: 18px;
+  transition: transform 0.25s ease;
+}
+
+.success-btn:hover {
+  background: #12655d;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(23, 121, 111, 0.18);
+}
+
+.success-btn:hover span {
+  transform: translateX(4px);
+}
+
+/* =========================================
+   BOTTOM NOTE
+   ========================================= */
+
+.success-note {
+  margin: 24px 0 0;
+  color: #899490;
+  font-size: 13px;
+}
+
+/* =========================================
+   EMPTY / NO ORDER STATE
+   ========================================= */
+
+.checkout-empty {
+  text-align: center;
+}
+
+.checkout-empty h1 {
+  margin-bottom: 10px;
+}
+
+.checkout-empty p {
+  color: #71807d;
+  margin-bottom: 25px;
+}
+
+.checkout-shop-btn {
+  display: inline-block;
+  padding: 13px 24px;
+  background: #17796f;
+  color: #ffffff;
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+/* =========================================
+   RESPONSIVE
+   ========================================= */
+
+@media (max-width: 700px) {
+  .order-success-page {
+    padding: 35px 15px;
+  }
+
+  .order-success-container {
+    padding: 40px 25px;
+    border-radius: 16px;
+  }
+
+  .order-success-container h1 {
+    font-size: 28px;
+  }
+
+  .success-details {
+    grid-template-columns: 1fr;
+  }
+
+  .success-details > div + div {
+    border-left: none;
+    border-top: 1px solid #e8ecea;
+  }
+
+  .order-number {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .success-btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 400px) {
+  .order-success-container {
+    padding: 32px 18px;
+  }
+
+  .success-icon {
+    width: 68px;
+    height: 68px;
+    font-size: 32px;
+  }
+
+  .order-success-container h1 {
+    font-size: 24px;
+  }
+
+  .success-message {
+    font-size: 14px;
+  }
+}

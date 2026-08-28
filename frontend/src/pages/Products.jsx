@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import axios from "axios";
 import "./products.css";
+import ProductCard from "../components/ProductCard";
 
 const Products = () => {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
-
   const [loading, setLoading] = useState(true);
 
   // Filters
@@ -15,10 +14,8 @@ const Products = () => {
   const [selectedColor, setSelectedColor] = useState("");
   const [selectedBrand, setSelectedBrand] = useState("");
   const [selectedDiscount, setSelectedDiscount] = useState("");
-
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
-
   const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState("");
 
@@ -82,8 +79,11 @@ const Products = () => {
   const colors = [
     ...new Set(
       products
-        .flatMap((product) =>
-          product.variants?.map((variant) => variant.color) || []
+        .flatMap(
+          (product) =>
+            product.variants?.map(
+              (variant) => variant.color
+            ) || []
         )
         .filter(Boolean)
     ),
@@ -99,10 +99,8 @@ const Products = () => {
     setSelectedColor("");
     setSelectedBrand("");
     setSelectedDiscount("");
-
     setMinPrice("");
     setMaxPrice("");
-
     setSearch("");
     setSortBy("");
   };
@@ -125,7 +123,8 @@ const Products = () => {
       // Category
       if (
         selectedCategory &&
-        String(product.category) !== String(selectedCategory)
+        String(product.category) !==
+          String(selectedCategory)
       ) {
         return false;
       }
@@ -143,7 +142,8 @@ const Products = () => {
       if (selectedColor) {
         const productColors =
           product.variants?.map(
-            (variant) => variant.color?.toLowerCase()
+            (variant) =>
+              variant.color?.toLowerCase()
           ) || [];
 
         if (
@@ -158,7 +158,8 @@ const Products = () => {
       // Minimum Price
       if (
         minPrice &&
-        Number(product.price) < Number(minPrice)
+        Number(product.price) <
+          Number(minPrice)
       ) {
         return false;
       }
@@ -166,7 +167,8 @@ const Products = () => {
       // Maximum Price
       if (
         maxPrice &&
-        Number(product.price) > Number(maxPrice)
+        Number(product.price) >
+          Number(maxPrice)
       ) {
         return false;
       }
@@ -182,7 +184,8 @@ const Products = () => {
 
       // Search
       if (search) {
-        const searchText = search.toLowerCase();
+        const searchText =
+          search.toLowerCase();
 
         const productName =
           product.name?.toLowerCase() || "";
@@ -212,11 +215,17 @@ const Products = () => {
     .sort((a, b) => {
 
       if (sortBy === "low") {
-        return Number(a.price) - Number(b.price);
+        return (
+          Number(a.price) -
+          Number(b.price)
+        );
       }
 
       if (sortBy === "high") {
-        return Number(b.price) - Number(a.price);
+        return (
+          Number(b.price) -
+          Number(a.price)
+        );
       }
 
       if (sortBy === "discount") {
@@ -235,20 +244,6 @@ const Products = () => {
 
       return 0;
     });
-
-  // -----------------------------------
-  // CALCULATE MRP
-  // -----------------------------------
-
-  const calculateMRP = (price, discount) => {
-    if (!discount || discount === 0) {
-      return price;
-    }
-
-    return Math.round(
-      price / (1 - discount / 100)
-    );
-  };
 
   return (
     <div className="products-page">
@@ -272,6 +267,7 @@ const Products = () => {
           {/* SEARCH */}
 
           <div className="product-search">
+
             <input
               type="text"
               placeholder="Search products..."
@@ -280,13 +276,16 @@ const Products = () => {
                 setSearch(e.target.value)
               }
             />
+
           </div>
 
           {/* SORT */}
 
           <div className="sort-wrapper">
 
-            <label>Sort By</label>
+            <label>
+              Sort By
+            </label>
 
             <select
               value={sortBy}
@@ -318,7 +317,6 @@ const Products = () => {
           </div>
 
         </div>
-
       </div>
 
       {/* =================================
@@ -335,7 +333,9 @@ const Products = () => {
 
           <div className="filter-heading">
 
-            <h3>FILTERS</h3>
+            <h3>
+              FILTERS
+            </h3>
 
             <button
               onClick={clearFilters}
@@ -346,13 +346,13 @@ const Products = () => {
 
           </div>
 
-          {/* =================================
-              GENDER
-              ================================= */}
+          {/* GENDER */}
 
           <div className="filter-section">
 
-            <h4>Gender</h4>
+            <h4>
+              Gender
+            </h4>
 
             {[
               ["men", "Men"],
@@ -384,13 +384,13 @@ const Products = () => {
 
           </div>
 
-          {/* =================================
-              CATEGORY
-              ================================= */}
+          {/* CATEGORY */}
 
           <div className="filter-section">
 
-            <h4>Categories</h4>
+            <h4>
+              Categories
+            </h4>
 
             {categories.map((category) => (
 
@@ -419,13 +419,13 @@ const Products = () => {
 
           </div>
 
-          {/* =================================
-              COLOR
-              ================================= */}
+          {/* COLOR */}
 
           <div className="filter-section">
 
-            <h4>Color</h4>
+            <h4>
+              Color
+            </h4>
 
             {colors.map((color) => (
 
@@ -453,13 +453,13 @@ const Products = () => {
 
           </div>
 
-          {/* =================================
-              BRAND
-              ================================= */}
+          {/* BRAND */}
 
           <div className="filter-section">
 
-            <h4>Brand</h4>
+            <h4>
+              Brand
+            </h4>
 
             {brands.map((brand) => (
 
@@ -487,13 +487,13 @@ const Products = () => {
 
           </div>
 
-          {/* =================================
-              PRICE
-              ================================= */}
+          {/* PRICE */}
 
           <div className="filter-section">
 
-            <h4>Price</h4>
+            <h4>
+              Price
+            </h4>
 
             <div className="price-inputs">
 
@@ -521,13 +521,13 @@ const Products = () => {
 
           </div>
 
-          {/* =================================
-              DISCOUNT
-              ================================= */}
+          {/* DISCOUNT */}
 
           <div className="filter-section">
 
-            <h4>Discount Range</h4>
+            <h4>
+              Discount Range
+            </h4>
 
             {[
               ["10", "10% and above"],
@@ -603,147 +603,14 @@ const Products = () => {
 
             <div className="products-grid">
 
-              {filteredProducts.map((product) => {
+              {filteredProducts.map((product) => (
 
-                const discount =
-                  Number(
-                    product.discount_percent || 0
-                  );
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                />
 
-                const price =
-                  Number(product.price);
-
-                const mrp =
-                  calculateMRP(
-                    price,
-                    discount
-                  );
-
-                return (
-
-                  <div
-                    className="product-card"
-                    key={product.id}
-                  >
-
-                    {/* IMAGE */}
-
-                    <div className="product-image-wrapper">
-
-                      {discount > 0 && (
-
-                        <span className="discount-badge">
-
-                          {discount}% OFF
-
-                        </span>
-
-                      )}
-
-                      <img
-                        src={
-                          product.image ||
-                          "/images/product-placeholder.jpg"
-                        }
-                        alt={product.name}
-                        className="product-image"
-                      />
-
-                    </div>
-
-                    {/* DETAILS */}
-
-                    <div className="product-info">
-
-                      <span className="product-brand">
-
-                        {product.brand ||
-                          "VYNORA"}
-
-                      </span>
-
-                      <span className="product-category">
-
-                        {product.category_name ||
-                          "Collection"}
-
-                      </span>
-
-                      <h3 className="product-name">
-
-                        {product.name}
-
-                      </h3>
-
-                      {/* PRICE */}
-
-                      <div className="product-price">
-
-                        <span className="selling-price">
-
-                          ₹
-                          {price.toLocaleString(
-                            "en-IN"
-                          )}
-
-                        </span>
-
-                        {discount > 0 && (
-
-                          <span className="original-price">
-
-                            ₹
-                            {mrp.toLocaleString(
-                              "en-IN"
-                            )}
-
-                          </span>
-
-                        )}
-
-                        {discount > 0 && (
-
-                          <span className="discount-text">
-
-                            {discount}% OFF
-
-                          </span>
-
-                        )}
-
-                      </div>
-
-                      {/* STOCK */}
-
-                      <div
-                        className={
-                          product.stock > 0
-                            ? "stock available"
-                            : "stock unavailable"
-                        }
-                      >
-
-                        {product.stock > 0
-                          ? `${product.stock} items in stock`
-                          : "Out of stock"}
-
-                      </div>
-
-                      {/* VIEW DETAILS */}
-
-                      <Link
-                        to={`/products/${product.id}`}
-                        className="view-details-btn"
-                      >
-                        View Details
-                      </Link>
-
-                    </div>
-
-                  </div>
-
-                );
-              })}
+              ))}
 
             </div>
 

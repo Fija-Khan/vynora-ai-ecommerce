@@ -7,12 +7,20 @@ from .serializers import CategorySerializer, ProductSerializer
 from .permissions import IsAdminOrReadOnly
 
 
+# =========================================
+# CATEGORY LIST + CREATE
+# =========================================
+
 class CategoryListCreateView(generics.ListCreateAPIView):
 
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     permission_classes = [IsAdminOrReadOnly]
 
+
+# =========================================
+# PRODUCT LIST + CREATE
+# =========================================
 
 class ProductListCreateView(generics.ListCreateAPIView):
 
@@ -25,12 +33,20 @@ class ProductListCreateView(generics.ListCreateAPIView):
         OrderingFilter,
     ]
 
+    # =========================================
+    # FILTER FIELDS
+    # =========================================
+
     filterset_fields = [
         "category",
         "gender",
         "brand",
         "variants__color",
     ]
+
+    # =========================================
+    # SEARCH FIELDS
+    # =========================================
 
     search_fields = [
         "name",
@@ -39,6 +55,10 @@ class ProductListCreateView(generics.ListCreateAPIView):
         "category__name",
         "variants__color",
     ]
+
+    # =========================================
+    # ORDERING FIELDS
+    # =========================================
 
     ordering_fields = [
         "price",
@@ -51,15 +71,23 @@ class ProductListCreateView(generics.ListCreateAPIView):
         "-created_at",
     ]
 
+    # =========================================
+    # QUERYSET
+    # =========================================
+
     def get_queryset(self):
 
-        queryset = Product.objects.filter(
-            is_active=True
-        ).distinct()
+        queryset = (
+            Product.objects
+            .filter(is_active=True)
+            .prefetch_related("variants")
+            .select_related("category")
+            .distinct()
+        )
 
-        # -----------------------------
+        # =====================================
         # PRICE FILTER
-        # -----------------------------
+        # =====================================
 
         min_price = self.request.query_params.get("min_price")
         max_price = self.request.query_params.get("max_price")
@@ -74,9 +102,9 @@ class ProductListCreateView(generics.ListCreateAPIView):
                 price__lte=max_price
             )
 
-        # -----------------------------
+        # =====================================
         # DISCOUNT FILTER
-        # -----------------------------
+        # =====================================
 
         min_discount = self.request.query_params.get(
             "min_discount"
@@ -90,10 +118,20 @@ class ProductListCreateView(generics.ListCreateAPIView):
         return queryset
 
 
+# =========================================
+# PRODUCT DETAIL
+# =========================================
+
 class ProductDetailView(
     generics.RetrieveUpdateDestroyAPIView
 ):
 
-    queryset = Product.objects.all()
     serializer_class = ProductSerializer
     permission_classes = [IsAdminOrReadOnly]
+
+    queryset = (
+        Product.objects
+        .select_related("category")
+        .prefetch_related("variants")
+        .filter(is_active=True)
+    )

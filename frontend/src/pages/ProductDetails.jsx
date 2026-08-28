@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import "./productDetails.css";
 
 function ProductDetails() {
   const { id } = useParams();
+  const navigate = useNavigate();
 
   const [product, setProduct] = useState(null);
   const [relatedProducts, setRelatedProducts] = useState([]);
@@ -17,10 +18,15 @@ function ProductDetails() {
   const [relatedLoading, setRelatedLoading] = useState(true);
   const [error, setError] = useState("");
 
+  // =========================================
+  // FETCH PRODUCT
+  // =========================================
+
   useEffect(() => {
     const fetchProduct = async () => {
       try {
         setLoading(true);
+        setError("");
 
         const response = await axios.get(
           `http://127.0.0.1:8000/api/products/${id}/`
@@ -38,10 +44,10 @@ function ProductDetails() {
     fetchProduct();
   }, [id]);
 
-  /*
-    Fetch all products and find products
-    from the same category.
-  */
+  // =========================================
+  // FETCH RELATED PRODUCTS
+  // =========================================
+
   useEffect(() => {
     const fetchRelatedProducts = async () => {
       try {
@@ -51,8 +57,11 @@ function ProductDetails() {
           "http://127.0.0.1:8000/api/products/"
         );
 
+        const productList =
+          response.data.results || response.data;
+
         setRelatedProducts(
-          response.data.filter(
+          productList.filter(
             (item) =>
               item.category === product?.category &&
               item.id !== Number(id)
@@ -73,33 +82,154 @@ function ProductDetails() {
     }
   }, [product, id]);
 
-  const colors = [
-    ...new Set(
-      product?.variants
-        ?.map((variant) => variant.color)
-        .filter(Boolean)
-    ),
-  ];
+  // =========================================
+  // COLORS
+  // =========================================
 
-  const sizes = [
-    ...new Set(
-      product?.variants
-        ?.map((variant) => variant.size)
-        .filter(Boolean)
-    ),
-  ];
+  const colors = product?.available_colors || [];
+
+  // =========================================
+  // SIZES
+  // =========================================
+
+  const sizes = product?.available_sizes || [];
+
+  // =========================================
+  // QUANTITY
+  // =========================================
 
   const increaseQuantity = () => {
-    if (quantity < product.stock) {
-      setQuantity(quantity + 1);
+    if (quantity < Number(product.stock)) {
+      setQuantity((prev) => prev + 1);
     }
   };
 
   const decreaseQuantity = () => {
     if (quantity > 1) {
-      setQuantity(quantity - 1);
+      setQuantity((prev) => prev - 1);
     }
   };
+
+  // =========================================
+  // ADD TO CART
+  // =========================================
+
+  const handleAddToCart = () => {
+    if (!product) {
+      return;
+    }
+
+    const stock = Number(product.stock || 0);
+
+    if (stock <= 0) {
+      return;
+    }
+
+    // -----------------------------------------
+    // Prepare cart item
+    // -----------------------------------------
+
+    const cartItem = {
+      id: product.id,
+      name: product.name,
+      brand: product.brand || "VYNORA",
+
+      price: Number(
+        product.selling_price ||
+        product.price ||
+        0
+      ),
+
+      mrp: Number(
+        product.mrp ||
+        product.price ||
+        0
+      ),
+
+      discount_percent: Number(
+        product.discount_percent || 0
+      ),
+
+      image: product.image || "",
+
+      quantity: quantity,
+
+      selectedColor: selectedColor,
+      selectedSize: selectedSize,
+
+      stock: stock,
+    };
+
+    // -----------------------------------------
+    // Get existing cart
+    // -----------------------------------------
+
+    const existingCart =
+      JSON.parse(
+        localStorage.getItem("vynora_cart")
+      ) || [];
+
+    // -----------------------------------------
+    // Check same product + color + size
+    // -----------------------------------------
+
+    const existingItemIndex =
+      existingCart.findIndex(
+        (item) =>
+          item.id === cartItem.id &&
+          item.selectedColor ===
+            cartItem.selectedColor &&
+          item.selectedSize ===
+            cartItem.selectedSize
+      );
+
+    // -----------------------------------------
+    // If already exists
+    // -----------------------------------------
+
+    if (existingItemIndex !== -1) {
+      const existingItem =
+        existingCart[existingItemIndex];
+
+      const currentQuantity =
+        Number(existingItem.quantity || 1);
+
+      const newQuantity =
+        currentQuantity + quantity;
+
+      existingItem.quantity = Math.min(
+        newQuantity,
+        stock
+      );
+    }
+
+    // -----------------------------------------
+    // New product
+    // -----------------------------------------
+
+    else {
+      existingCart.push(cartItem);
+    }
+
+    // -----------------------------------------
+    // Save cart
+    // -----------------------------------------
+
+    localStorage.setItem(
+      "vynora_cart",
+      JSON.stringify(existingCart)
+    );
+
+    // -----------------------------------------
+    // Go to cart
+    // -----------------------------------------
+
+    navigate("/cart");
+  };
+
+  // =========================================
+  // LOADING
+  // =========================================
 
   if (loading) {
     return (
@@ -110,6 +240,10 @@ function ProductDetails() {
       </main>
     );
   }
+
+  // =========================================
+  // ERROR
+  // =========================================
 
   if (error || !product) {
     return (
@@ -128,12 +262,37 @@ function ProductDetails() {
     );
   }
 
+  // =========================================
+  // PRODUCT VALUES
+  // =========================================
+
+  const price = Number(
+    product.selling_price ||
+      product.price ||
+      0
+  );
+
+  const mrp = Number(
+    product.mrp || price
+  );
+
+  const discount = Number(
+    product.discount_percent || 0
+  );
+
+  const stock = Number(
+    product.stock || 0
+  );
+
+  // =========================================
+  // RETURN
+  // =========================================
+
   return (
     <main className="product-details-page">
-
       <div className="container">
 
-        {/* Back */}
+        {/* BACK TO PRODUCTS */}
 
         <Link
           to="/products"
@@ -142,13 +301,13 @@ function ProductDetails() {
           ← Back to Products
         </Link>
 
-        {/* =========================
+        {/* =========================================
             PRODUCT DETAILS
-           ========================= */}
+            ========================================= */}
 
         <section className="product-details-container">
 
-          {/* Product Image */}
+          {/* PRODUCT IMAGE */}
 
           <div className="product-details-image">
 
@@ -163,37 +322,102 @@ function ProductDetails() {
               </div>
             )}
 
+            {/* DISCOUNT BADGE */}
+
+            {discount > 0 && (
+              <span className="product-details-discount">
+                {discount}% OFF
+              </span>
+            )}
+
           </div>
 
-          {/* Product Information */}
+          {/* PRODUCT INFORMATION */}
 
           <div className="product-details-info">
 
-            <span className="product-details-category">
-              {product.category_name}
+            {/* BRAND */}
+
+            <span className="product-details-brand">
+              {product.brand || "VYNORA"}
             </span>
+
+            {/* CATEGORY */}
+
+            <span className="product-details-category">
+              {product.category_name ||
+                "Collection"}
+            </span>
+
+            {/* PRODUCT NAME */}
 
             <h1>{product.name}</h1>
 
-            <p className="product-details-price">
-              ₹{product.price}
+            {/* PRICE */}
+
+            <div className="product-details-price">
+
+              <span className="details-selling-price">
+                ₹{price.toLocaleString("en-IN")}
+              </span>
+
+              {discount > 0 && (
+                <span className="details-mrp">
+                  ₹{mrp.toLocaleString("en-IN")}
+                </span>
+              )}
+
+              {discount > 0 && (
+                <span className="details-discount">
+                  {discount}% OFF
+                </span>
+              )}
+
+            </div>
+
+            {/* TAX */}
+
+            <p className="tax-info">
+              Inclusive of all taxes
             </p>
 
-            <p className="product-details-description">
-              {product.description}
-            </p>
+            {/* DESCRIPTION */}
 
-            {/* Color */}
+            <div className="product-details-description">
+
+              <h3>Product Details</h3>
+
+              <p>
+                {product.description ||
+                  "No description available for this product."}
+              </p>
+
+            </div>
+
+            {/* =====================================
+                COLOR
+                ===================================== */}
 
             {colors.length > 0 && (
               <div className="variant-section">
 
-                <h4>Color</h4>
+                <div className="variant-heading">
+
+                  <h4>Color</h4>
+
+                  {selectedColor && (
+                    <span>
+                      {selectedColor}
+                    </span>
+                  )}
+
+                </div>
 
                 <div className="variant-options">
 
                   {colors.map((color) => (
                     <button
+                      type="button"
                       key={color}
                       className={`variant-option ${
                         selectedColor === color
@@ -213,17 +437,30 @@ function ProductDetails() {
               </div>
             )}
 
-            {/* Size */}
+            {/* =====================================
+                SIZE
+                ===================================== */}
 
             {sizes.length > 0 && (
               <div className="variant-section">
 
-                <h4>Size</h4>
+                <div className="variant-heading">
+
+                  <h4>Size</h4>
+
+                  {selectedSize && (
+                    <span>
+                      {selectedSize}
+                    </span>
+                  )}
+
+                </div>
 
                 <div className="variant-options">
 
                   {sizes.map((size) => (
                     <button
+                      type="button"
                       key={size}
                       className={`variant-option ${
                         selectedSize === size
@@ -243,17 +480,28 @@ function ProductDetails() {
               </div>
             )}
 
-            {/* Stock */}
+            {/* =====================================
+                STOCK
+                ===================================== */}
 
-            <div className="product-details-stock">
-              {product.stock > 0
-                ? `${product.stock} items available`
-                : "Out of stock"}
+            <div
+              className={`product-details-stock ${
+                stock > 0
+                  ? "stock-available"
+                  : "stock-unavailable"
+              }`}
+            >
+              {product.stock_status ||
+                (stock > 0
+                  ? `${stock} items available`
+                  : "Out of stock")}
             </div>
 
-            {/* Quantity */}
+            {/* =====================================
+                QUANTITY
+                ===================================== */}
 
-            {product.stock > 0 && (
+            {stock > 0 && (
               <div className="quantity-section">
 
                 <h4>Quantity</h4>
@@ -261,15 +509,23 @@ function ProductDetails() {
                 <div className="quantity-control">
 
                   <button
+                    type="button"
                     onClick={decreaseQuantity}
+                    disabled={quantity <= 1}
                   >
                     −
                   </button>
 
-                  <span>{quantity}</span>
+                  <span>
+                    {quantity}
+                  </span>
 
                   <button
+                    type="button"
                     onClick={increaseQuantity}
+                    disabled={
+                      quantity >= stock
+                    }
                   >
                     +
                   </button>
@@ -279,18 +535,28 @@ function ProductDetails() {
               </div>
             )}
 
-            {/* Actions */}
+            {/* =====================================
+                ACTIONS
+                ===================================== */}
 
             <div className="product-details-actions">
 
               <button
+                type="button"
                 className="add-cart-btn"
-                disabled={product.stock === 0}
+                disabled={stock === 0}
+                onClick={handleAddToCart}
               >
-                Add to Cart
+                {stock > 0
+                  ? "Add to Cart"
+                  : "Out of Stock"}
               </button>
 
-              <button className="wishlist-btn">
+              <button
+                type="button"
+                className="wishlist-btn"
+                aria-label="Add to wishlist"
+              >
                 ♡
               </button>
 
@@ -300,15 +566,17 @@ function ProductDetails() {
 
         </section>
 
-        {/* =========================
+        {/* =========================================
             RELATED PRODUCTS
-           ========================= */}
+            ========================================= */}
 
         <section className="related-products-section">
 
           <div className="related-products-heading">
 
-            <span>Discover More</span>
+            <span>
+              Discover More
+            </span>
 
             <h2>
               Related Products
@@ -320,6 +588,8 @@ function ProductDetails() {
 
           </div>
 
+          {/* RELATED LOADING */}
+
           {relatedLoading ? (
             <p className="related-message">
               Loading related products...
@@ -330,53 +600,78 @@ function ProductDetails() {
 
               {relatedProducts
                 .slice(0, 4)
-                .map((relatedProduct) => (
+                .map((relatedProduct) => {
 
-                  <div
-                    className="related-product-card"
-                    key={relatedProduct.id}
-                  >
+                  const relatedPrice =
+                    Number(
+                      relatedProduct.selling_price ||
+                        relatedProduct.price ||
+                        0
+                    );
 
-                    <div className="related-product-image">
+                  return (
 
-                      {relatedProduct.image ? (
-                        <img
-                          src={relatedProduct.image}
-                          alt={relatedProduct.name}
-                        />
-                      ) : (
+                    <div
+                      className="related-product-card"
+                      key={relatedProduct.id}
+                    >
+
+                      {/* IMAGE */}
+
+                      <div className="related-product-image">
+
+                        {relatedProduct.image ? (
+                          <img
+                            src={relatedProduct.image}
+                            alt={
+                              relatedProduct.name
+                            }
+                          />
+                        ) : (
+                          <span>
+                            No Image
+                          </span>
+                        )}
+
+                      </div>
+
+                      {/* CONTENT */}
+
+                      <div className="related-product-content">
+
                         <span>
-                          No Image
+                          {relatedProduct.brand ||
+                            "VYNORA"}
                         </span>
-                      )}
+
+                        <small>
+                          {relatedProduct.category_name ||
+                            "Collection"}
+                        </small>
+
+                        <h3>
+                          {relatedProduct.name}
+                        </h3>
+
+                        <p>
+                          ₹
+                          {relatedPrice.toLocaleString(
+                            "en-IN"
+                          )}
+                        </p>
+
+                        <Link
+                          to={`/products/${relatedProduct.id}`}
+                        >
+                          View Product →
+                        </Link>
+
+                      </div>
 
                     </div>
 
-                    <div className="related-product-content">
-
-                      <span>
-                        {relatedProduct.category_name}
-                      </span>
-
-                      <h3>
-                        {relatedProduct.name}
-                      </h3>
-
-                      <p>
-                        ₹{relatedProduct.price}
-                      </p>
-
-                      <Link
-                        to={`/products/${relatedProduct.id}`}
-                      >
-                        View Product →
-                      </Link>
-
-                    </div>
-
-                  </div>
-
-                ))}
+                  );
+                })}
 
             </div>
 
@@ -391,7 +686,6 @@ function ProductDetails() {
         </section>
 
       </div>
-
     </main>
   );
 }
