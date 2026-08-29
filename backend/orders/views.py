@@ -5,6 +5,10 @@ from .models import Order
 from .serializers import OrderSerializer
 
 
+# =========================================
+# ORDER LIST + CREATE
+# =========================================
+
 class OrderListCreateView(generics.ListCreateAPIView):
 
     serializer_class = OrderSerializer
@@ -15,11 +19,10 @@ class OrderListCreateView(generics.ListCreateAPIView):
             user=self.request.user
         )
 
-    def perform_create(self, serializer):
-        serializer.save(
-            user=self.request.user
-        )
 
+# =========================================
+# ORDER DETAIL
+# =========================================
 
 class OrderDetailView(generics.RetrieveAPIView):
 

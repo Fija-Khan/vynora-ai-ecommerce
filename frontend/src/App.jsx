@@ -7,6 +7,9 @@ import ProductDetails from "./pages/ProductDetails";
 import Cart from "./pages/Cart";
 import Checkout from "./pages/Checkout";
 import OrderSuccess from "./pages/OrderSuccess";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Orders from "./pages/Orders";
 
 
 function App() {
@@ -23,6 +26,9 @@ function App() {
         <Route path="/cart" element={<Cart />} />
          <Route path="/checkout" element={<Checkout />} />
          <Route path="/order-success"element={<OrderSuccess />}/>
+         <Route path="/orders" element={<Orders />} />
+         <Route path="/login" element={<Login />} />
+         <Route path="/register" element={<Register />} />
         <Route path="/wishlist" element={<h1>Wishlist</h1>} />
         <Route path="/login" element={<h1>Login</h1>} />
         <Route path="/register" element={<h1>Register</h1>} />
