@@ -9,11 +9,9 @@ function ProductDetails() {
 
   const [product, setProduct] = useState(null);
   const [relatedProducts, setRelatedProducts] = useState([]);
-
   const [quantity, setQuantity] = useState(1);
   const [selectedColor, setSelectedColor] = useState("");
   const [selectedSize, setSelectedSize] = useState("");
-
   const [loading, setLoading] = useState(true);
   const [relatedLoading, setRelatedLoading] = useState(true);
   const [error, setError] = useState("");
@@ -21,7 +19,6 @@ function ProductDetails() {
   // =========================================
   // FETCH PRODUCT
   // =========================================
-
   useEffect(() => {
     const fetchProduct = async () => {
       try {
@@ -47,7 +44,6 @@ function ProductDetails() {
   // =========================================
   // FETCH RELATED PRODUCTS
   // =========================================
-
   useEffect(() => {
     const fetchRelatedProducts = async () => {
       try {
@@ -85,25 +81,25 @@ function ProductDetails() {
   // =========================================
   // COLORS
   // =========================================
-
   const colors = product?.available_colors || [];
 
   // =========================================
   // SIZES
   // =========================================
-
   const sizes = product?.available_sizes || [];
 
   // =========================================
-  // QUANTITY
+  // INCREASE QUANTITY
   // =========================================
-
   const increaseQuantity = () => {
     if (quantity < Number(product.stock)) {
       setQuantity((prev) => prev + 1);
     }
   };
 
+  // =========================================
+  // DECREASE QUANTITY
+  // =========================================
   const decreaseQuantity = () => {
     if (quantity > 1) {
       setQuantity((prev) => prev - 1);
@@ -113,8 +109,31 @@ function ProductDetails() {
   // =========================================
   // ADD TO CART
   // =========================================
-
   const handleAddToCart = () => {
+    // -----------------------------------------
+    // CHECK LOGIN
+    // -----------------------------------------
+    const accessToken = localStorage.getItem(
+      "vynora_access_token"
+    );
+
+    // User is NOT logged in
+    if (!accessToken) {
+      // Save current product page
+      localStorage.setItem(
+        "vynora_redirect_after_login",
+        `/products/${id}`
+      );
+
+      // Go to login
+      navigate("/login");
+
+      return;
+    }
+
+    // -----------------------------------------
+    // PRODUCT CHECK
+    // -----------------------------------------
     if (!product) {
       return;
     }
@@ -126,24 +145,25 @@ function ProductDetails() {
     }
 
     // -----------------------------------------
-    // Prepare cart item
+    // PREPARE CART ITEM
     // -----------------------------------------
-
     const cartItem = {
       id: product.id,
+
       name: product.name,
+
       brand: product.brand || "VYNORA",
 
       price: Number(
         product.selling_price ||
-        product.price ||
-        0
+          product.price ||
+          0
       ),
 
       mrp: Number(
         product.mrp ||
-        product.price ||
-        0
+          product.price ||
+          0
       ),
 
       discount_percent: Number(
@@ -155,24 +175,34 @@ function ProductDetails() {
       quantity: quantity,
 
       selectedColor: selectedColor,
+
       selectedSize: selectedSize,
 
       stock: stock,
     };
 
     // -----------------------------------------
-    // Get existing cart
+    // GET EXISTING CART
     // -----------------------------------------
+    let existingCart = [];
 
-    const existingCart =
-      JSON.parse(
-        localStorage.getItem("vynora_cart")
-      ) || [];
+    try {
+      existingCart =
+        JSON.parse(
+          localStorage.getItem("vynora_cart")
+        ) || [];
+    } catch (error) {
+      console.error(
+        "Failed to read cart:",
+        error
+      );
+
+      existingCart = [];
+    }
 
     // -----------------------------------------
-    // Check same product + color + size
+    // CHECK SAME PRODUCT + COLOR + SIZE
     // -----------------------------------------
-
     const existingItemIndex =
       existingCart.findIndex(
         (item) =>
@@ -184,15 +214,15 @@ function ProductDetails() {
       );
 
     // -----------------------------------------
-    // If already exists
+    // ALREADY EXISTS
     // -----------------------------------------
-
     if (existingItemIndex !== -1) {
       const existingItem =
         existingCart[existingItemIndex];
 
-      const currentQuantity =
-        Number(existingItem.quantity || 1);
+      const currentQuantity = Number(
+        existingItem.quantity || 1
+      );
 
       const newQuantity =
         currentQuantity + quantity;
@@ -204,33 +234,29 @@ function ProductDetails() {
     }
 
     // -----------------------------------------
-    // New product
+    // NEW PRODUCT
     // -----------------------------------------
-
     else {
       existingCart.push(cartItem);
     }
 
     // -----------------------------------------
-    // Save cart
+    // SAVE CART
     // -----------------------------------------
-
     localStorage.setItem(
       "vynora_cart",
       JSON.stringify(existingCart)
     );
 
     // -----------------------------------------
-    // Go to cart
+    // GO TO CART
     // -----------------------------------------
-
     navigate("/cart");
   };
 
   // =========================================
   // LOADING
   // =========================================
-
   if (loading) {
     return (
       <main className="product-details-page">
@@ -244,7 +270,6 @@ function ProductDetails() {
   // =========================================
   // ERROR
   // =========================================
-
   if (error || !product) {
     return (
       <main className="product-details-page">
@@ -265,7 +290,6 @@ function ProductDetails() {
   // =========================================
   // PRODUCT VALUES
   // =========================================
-
   const price = Number(
     product.selling_price ||
       product.price ||
@@ -287,13 +311,11 @@ function ProductDetails() {
   // =========================================
   // RETURN
   // =========================================
-
   return (
     <main className="product-details-page">
       <div className="container">
 
         {/* BACK TO PRODUCTS */}
-
         <Link
           to="/products"
           className="back-products-link"
@@ -303,14 +325,11 @@ function ProductDetails() {
 
         {/* =========================================
             PRODUCT DETAILS
-            ========================================= */}
-
+        ========================================= */}
         <section className="product-details-container">
 
           {/* PRODUCT IMAGE */}
-
           <div className="product-details-image">
-
             {product.image ? (
               <img
                 src={product.image}
@@ -323,40 +342,32 @@ function ProductDetails() {
             )}
 
             {/* DISCOUNT BADGE */}
-
             {discount > 0 && (
               <span className="product-details-discount">
                 {discount}% OFF
               </span>
             )}
-
           </div>
 
           {/* PRODUCT INFORMATION */}
-
           <div className="product-details-info">
 
             {/* BRAND */}
-
             <span className="product-details-brand">
               {product.brand || "VYNORA"}
             </span>
 
             {/* CATEGORY */}
-
             <span className="product-details-category">
               {product.category_name ||
                 "Collection"}
             </span>
 
             {/* PRODUCT NAME */}
-
             <h1>{product.name}</h1>
 
             {/* PRICE */}
-
             <div className="product-details-price">
-
               <span className="details-selling-price">
                 ₹{price.toLocaleString("en-IN")}
               </span>
@@ -372,37 +383,29 @@ function ProductDetails() {
                   {discount}% OFF
                 </span>
               )}
-
             </div>
 
             {/* TAX */}
-
             <p className="tax-info">
               Inclusive of all taxes
             </p>
 
             {/* DESCRIPTION */}
-
             <div className="product-details-description">
-
               <h3>Product Details</h3>
 
               <p>
                 {product.description ||
                   "No description available for this product."}
               </p>
-
             </div>
 
             {/* =====================================
                 COLOR
-                ===================================== */}
-
+            ===================================== */}
             {colors.length > 0 && (
               <div className="variant-section">
-
                 <div className="variant-heading">
-
                   <h4>Color</h4>
 
                   {selectedColor && (
@@ -410,11 +413,9 @@ function ProductDetails() {
                       {selectedColor}
                     </span>
                   )}
-
                 </div>
 
                 <div className="variant-options">
-
                   {colors.map((color) => (
                     <button
                       type="button"
@@ -431,21 +432,16 @@ function ProductDetails() {
                       {color}
                     </button>
                   ))}
-
                 </div>
-
               </div>
             )}
 
             {/* =====================================
                 SIZE
-                ===================================== */}
-
+            ===================================== */}
             {sizes.length > 0 && (
               <div className="variant-section">
-
                 <div className="variant-heading">
-
                   <h4>Size</h4>
 
                   {selectedSize && (
@@ -453,11 +449,9 @@ function ProductDetails() {
                       {selectedSize}
                     </span>
                   )}
-
                 </div>
 
                 <div className="variant-options">
-
                   {sizes.map((size) => (
                     <button
                       type="button"
@@ -474,16 +468,13 @@ function ProductDetails() {
                       {size}
                     </button>
                   ))}
-
                 </div>
-
               </div>
             )}
 
             {/* =====================================
                 STOCK
-                ===================================== */}
-
+            ===================================== */}
             <div
               className={`product-details-stock ${
                 stock > 0
@@ -499,15 +490,12 @@ function ProductDetails() {
 
             {/* =====================================
                 QUANTITY
-                ===================================== */}
-
+            ===================================== */}
             {stock > 0 && (
               <div className="quantity-section">
-
                 <h4>Quantity</h4>
 
                 <div className="quantity-control">
-
                   <button
                     type="button"
                     onClick={decreaseQuantity}
@@ -529,16 +517,13 @@ function ProductDetails() {
                   >
                     +
                   </button>
-
                 </div>
-
               </div>
             )}
 
             {/* =====================================
                 ACTIONS
-                ===================================== */}
-
+            ===================================== */}
             <div className="product-details-actions">
 
               <button
@@ -561,19 +546,15 @@ function ProductDetails() {
               </button>
 
             </div>
-
           </div>
-
         </section>
 
         {/* =========================================
             RELATED PRODUCTS
-            ========================================= */}
-
+        ========================================= */}
         <section className="related-products-section">
 
           <div className="related-products-heading">
-
             <span>
               Discover More
             </span>
@@ -585,17 +566,14 @@ function ProductDetails() {
             <p>
               You may also like these products.
             </p>
-
           </div>
 
           {/* RELATED LOADING */}
-
           {relatedLoading ? (
             <p className="related-message">
               Loading related products...
             </p>
           ) : relatedProducts.length > 0 ? (
-
             <div className="related-products-grid">
 
               {relatedProducts
@@ -610,14 +588,12 @@ function ProductDetails() {
                     );
 
                   return (
-
                     <div
                       className="related-product-card"
                       key={relatedProduct.id}
                     >
 
                       {/* IMAGE */}
-
                       <div className="related-product-image">
 
                         {relatedProduct.image ? (
@@ -636,7 +612,6 @@ function ProductDetails() {
                       </div>
 
                       {/* CONTENT */}
-
                       <div className="related-product-content">
 
                         <span>
@@ -667,24 +642,18 @@ function ProductDetails() {
                         </Link>
 
                       </div>
-
                     </div>
-
                   );
                 })}
 
             </div>
-
           ) : (
-
             <p className="related-message">
               No related products available.
             </p>
-
           )}
 
         </section>
-
       </div>
     </main>
   );

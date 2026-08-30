@@ -10,6 +10,7 @@ import OrderSuccess from "./pages/OrderSuccess";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Orders from "./pages/Orders";
+import Payments from "./pages/Payments";
 
 
 function App() {
@@ -29,6 +30,7 @@ function App() {
          <Route path="/orders" element={<Orders />} />
          <Route path="/login" element={<Login />} />
          <Route path="/register" element={<Register />} />
+         <Route path="/payments" element={<Payments />} />
         <Route path="/wishlist" element={<h1>Wishlist</h1>} />
         <Route path="/login" element={<h1>Login</h1>} />
         <Route path="/register" element={<h1>Register</h1>} />

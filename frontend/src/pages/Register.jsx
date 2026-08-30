@@ -42,11 +42,13 @@ function Register() {
     const username = formData.username.trim();
     const email = formData.email.trim();
 
-    // =========================================
-    // BASIC VALIDATION
-    // =========================================
-
-    if (!username || !email || !formData.password || !formData.confirmPassword) {
+    // Basic validation
+    if (
+      !username ||
+      !email ||
+      !formData.password ||
+      !formData.confirmPassword
+    ) {
       setError("Please fill in all fields.");
       return;
     }
@@ -129,7 +131,6 @@ function Register() {
       setTimeout(() => {
         navigate("/login");
       }, 1500);
-
     } catch (error) {
       console.error("Registration error:", error);
 
@@ -141,9 +142,12 @@ function Register() {
     }
   };
 
+  // =========================================
+  // RETURN
+  // =========================================
+
   return (
     <main className="register-page">
-
       <div className="register-container">
 
         {/* ========================================
@@ -153,47 +157,53 @@ function Register() {
         <section className="register-card">
 
           {/* ========================================
+              BRAND
+          ======================================== */}
+
+          <div className="register-brand">
+            <span>V</span>
+            <strong>VYNORA</strong>
+          </div>
+
+          {/* ========================================
               HEADER
           ======================================== */}
 
           <div className="register-header">
-
             <span className="register-eyebrow">
               VYNORA ACCOUNT
             </span>
 
             <h1>
-              Create Account
+              Create Your Account
             </h1>
 
             <p>
-              Join Vynora and start your shopping journey.
+              Join Vynora and discover a better way to shop.
             </p>
-
           </div>
 
-
           {/* ========================================
-              ERROR
+              ERROR MESSAGE
           ======================================== */}
 
           {error && (
             <div className="register-error">
-              {error}
+              <span>!</span>
+              <p>{error}</p>
             </div>
           )}
 
-
           {/* ========================================
-              SUCCESS
+              SUCCESS MESSAGE
           ======================================== */}
 
           {success && (
             <div className="register-success">
-              {success}
+              <span>✓</span>
+              <p>{success}</p>
             </div>
           )}
-
 
           {/* ========================================
               REGISTER FORM
@@ -204,90 +214,106 @@ function Register() {
             {/* USERNAME */}
 
             <div className="register-field">
-
               <label htmlFor="username">
                 Username
               </label>
 
-              <input
-                id="username"
-                type="text"
-                name="username"
-                placeholder="Choose a username"
-                value={formData.username}
-                onChange={handleChange}
-                autoComplete="username"
-                disabled={loading}
-              />
+              <div className="register-input-wrapper">
+                <span className="input-icon">
+                  @
+                </span>
 
+                <input
+                  id="username"
+                  type="text"
+                  name="username"
+                  placeholder="Choose a username"
+                  value={formData.username}
+                  onChange={handleChange}
+                  autoComplete="username"
+                  disabled={loading}
+                />
+              </div>
             </div>
-
 
             {/* EMAIL */}
 
             <div className="register-field">
-
               <label htmlFor="email">
                 Email Address
               </label>
 
-              <input
-                id="email"
-                type="email"
-                name="email"
-                placeholder="Enter your email"
-                value={formData.email}
-                onChange={handleChange}
-                autoComplete="email"
-                disabled={loading}
-              />
+              <div className="register-input-wrapper">
+                <span className="input-icon">
+                  ✉
+                </span>
 
+                <input
+                  id="email"
+                  type="email"
+                  name="email"
+                  placeholder="Enter your email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  autoComplete="email"
+                  disabled={loading}
+                />
+              </div>
             </div>
-
 
             {/* PASSWORD */}
 
             <div className="register-field">
-
               <label htmlFor="password">
                 Password
               </label>
 
-              <input
-                id="password"
-                type="password"
-                name="password"
-                placeholder="Create a password"
-                value={formData.password}
-                onChange={handleChange}
-                autoComplete="new-password"
-                disabled={loading}
-              />
+              <div className="register-input-wrapper">
+                <span className="input-icon">
+                  •
+                </span>
 
+                <input
+                  id="password"
+                  type="password"
+                  name="password"
+                  placeholder="Create a password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  autoComplete="new-password"
+                  disabled={loading}
+                />
+              </div>
+
+              <small className="password-hint">
+                Minimum 8 characters
+              </small>
             </div>
-
 
             {/* CONFIRM PASSWORD */}
 
             <div className="register-field">
-
               <label htmlFor="confirmPassword">
                 Confirm Password
               </label>
 
-              <input
-                id="confirmPassword"
-                type="password"
-                name="confirmPassword"
-                placeholder="Confirm your password"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                autoComplete="new-password"
-                disabled={loading}
-              />
+              <div className="register-input-wrapper">
+                <span className="input-icon">
+                  •
+                </span>
 
+                <input
+                  id="confirmPassword"
+                  type="password"
+                  name="confirmPassword"
+                  placeholder="Confirm your password"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  autoComplete="new-password"
+                  disabled={loading}
+                />
+              </div>
             </div>
-
 
             {/* REGISTER BUTTON */}
 
@@ -296,27 +322,25 @@ function Register() {
               className="register-btn"
               disabled={loading}
             >
-
               {loading ? (
-                "Creating Account..."
+                <>
+                  <span className="register-spinner"></span>
+                  Creating Account...
+                </>
               ) : (
                 <>
                   Create Account
                   <span>→</span>
                 </>
               )}
-
             </button>
-
           </form>
-
 
           {/* ========================================
               LOGIN LINK
           ======================================== */}
 
           <div className="register-login">
-
             <span>
               Already have an account?
             </span>
@@ -324,13 +348,22 @@ function Register() {
             <Link to="/login">
               Login
             </Link>
+          </div>
 
+          {/* ========================================
+              FOOTER
+          ======================================== */}
+
+          <div className="register-footer">
+            <span>Secure</span>
+            <span>•</span>
+            <span>Private</span>
+            <span>•</span>
+            <span>Vynora</span>
           </div>
 
         </section>
-
       </div>
-
     </main>
   );
 }

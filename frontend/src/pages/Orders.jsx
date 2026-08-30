@@ -4,16 +4,19 @@ import "./orders.css";
 function Orders() {
   // ========================================
   // LOAD ORDERS
-  // Backend API integration will be connected later
   // ========================================
 
   let orders = [];
 
   try {
-    orders = JSON.parse(
-      localStorage.getItem("vynora_orders") || "[]"
-    );
+    const savedOrders = localStorage.getItem("vynora_orders");
+
+    if (savedOrders) {
+      const parsedOrders = JSON.parse(savedOrders);
+      orders = Array.isArray(parsedOrders) ? parsedOrders : [];
+    }
   } catch (error) {
+    console.error("Failed to load orders:", error);
     orders = [];
   }
 
@@ -24,11 +27,29 @@ function Orders() {
   const formatDate = (date) => {
     if (!date) return "Recently";
 
-    return new Date(date).toLocaleDateString("en-IN", {
+    const formattedDate = new Date(date);
+
+    if (Number.isNaN(formattedDate.getTime())) {
+      return "Recently";
+    }
+
+    return formattedDate.toLocaleDateString("en-IN", {
       day: "2-digit",
       month: "short",
       year: "numeric",
     });
+  };
+
+  // ========================================
+  // FORMAT STATUS
+  // ========================================
+
+  const formatStatus = (status) => {
+    if (!status) return "Pending";
+
+    return String(status)
+      .replaceAll("_", " ")
+      .replace(/\b\w/g, (letter) => letter.toUpperCase());
   };
 
   // ========================================
@@ -37,43 +58,58 @@ function Orders() {
 
   if (orders.length === 0) {
     return (
-      <div className="orders-page">
-
+      <main className="orders-page">
         <div className="orders-container">
-
           <div className="orders-header">
-            <h1>My Orders</h1>
-            <p>
-              Track and manage your Vynora orders
-            </p>
+            <div>
+              <span className="orders-eyebrow">
+                VYNORA ACCOUNT
+              </span>
+
+              <h1>My Orders</h1>
+
+              <p>
+                Track and manage your Vynora orders
+                in one place.
+              </p>
+            </div>
+
+            <Link
+              to="/products"
+              className="orders-header-btn"
+            >
+              Continue Shopping
+              <span>→</span>
+            </Link>
           </div>
 
-          <div className="orders-empty">
-
+          <section className="orders-empty">
             <div className="orders-empty-icon">
-              📦
+              <span>▣</span>
             </div>
+
+            <span className="orders-empty-label">
+              ORDER HISTORY
+            </span>
 
             <h2>No Orders Yet</h2>
 
             <p>
               You haven't placed any orders yet.
-              Start shopping and your orders will
-              appear here.
+              Discover something you love and your
+              orders will appear here.
             </p>
 
             <Link
               to="/products"
               className="orders-shop-btn"
             >
-              Continue Shopping
+              Start Shopping
+              <span>→</span>
             </Link>
-
-          </div>
-
+          </section>
         </div>
-
-      </div>
+      </main>
     );
   }
 
@@ -82,8 +118,7 @@ function Orders() {
   // ========================================
 
   return (
-    <div className="orders-page">
-
+    <main className="orders-page">
       <div className="orders-container">
 
         {/* ========================================
@@ -91,41 +126,54 @@ function Orders() {
         ======================================== */}
 
         <div className="orders-header">
-
           <div>
+            <span className="orders-eyebrow">
+              VYNORA ACCOUNT
+            </span>
+
             <h1>My Orders</h1>
 
             <p>
               Track and manage your Vynora orders
+              in one place.
             </p>
           </div>
 
-          <span className="orders-count">
-            {orders.length}{" "}
-            {orders.length === 1
-              ? "Order"
-              : "Orders"}
-          </span>
+          <div className="orders-header-right">
+            <div className="orders-count-box">
+              <strong>{orders.length}</strong>
 
+              <span>
+                {orders.length === 1
+                  ? "Order"
+                  : "Orders"}
+              </span>
+            </div>
+
+            <Link
+              to="/products"
+              className="orders-header-btn"
+            >
+              Continue Shopping
+              <span>→</span>
+            </Link>
+          </div>
         </div>
-
 
         {/* ========================================
             ORDERS LIST
         ======================================== */}
 
         <div className="orders-list">
-
           {orders.map((order, index) => {
-
             const orderId =
               order.id ||
               order.order_id ||
               `VN${1000 + index}`;
 
             const total =
-              order.total_amount ||
-              order.total ||
+              order.total_amount ??
+              order.total ??
               0;
 
             const status =
@@ -133,101 +181,151 @@ function Orders() {
 
             const paymentStatus =
               order.payment_status ||
+              order.paymentStatus ||
               "pending";
 
-            const items =
-              order.items || [];
+            const paymentMethod =
+              order.payment_method ||
+              order.paymentMethod ||
+              "cod";
+
+            const items = Array.isArray(order.items)
+              ? order.items
+              : [];
+
+            const totalItems = items.reduce(
+              (sum, item) =>
+                sum + Number(item.quantity || 1),
+              0
+            );
 
             return (
-              <div
+              <article
                 className="order-card"
-                key={orderId}
+                key={`${orderId}-${index}`}
               >
 
                 {/* ========================================
-                    ORDER TOP
+                    ORDER CARD HEADER
                 ======================================== */}
 
                 <div className="order-card-top">
 
-                  <div>
-
+                  <div className="order-id-section">
                     <span className="order-label">
-                      Order ID
+                      ORDER ID
                     </span>
 
                     <h2>
                       #{orderId}
                     </h2>
-
                   </div>
 
-                  <span className="order-date">
-                    {formatDate(
-                      order.created_at ||
-                      order.date
-                    )}
-                  </span>
+                  <div className="order-date-section">
+                    <span className="order-label">
+                      ORDER PLACED
+                    </span>
+
+                    <strong>
+                      {formatDate(
+                        order.created_at ||
+                        order.createdAt ||
+                        order.date
+                      )}
+                    </strong>
+                  </div>
 
                 </div>
 
+                {/* ========================================
+                    ORDER STATUS BAR
+                ======================================== */}
+
+                <div className="order-status-bar">
+
+                  <div className="order-status-main">
+                    <span className="status-dot"></span>
+
+                    <div>
+                      <span>
+                        Order Status
+                      </span>
+
+                      <strong
+                        className={`status-text status-${String(
+                          status
+                        ).toLowerCase()}`}
+                      >
+                        {formatStatus(status)}
+                      </strong>
+                    </div>
+                  </div>
+
+                  <div className="payment-status-main">
+                    <span>
+                      Payment
+                    </span>
+
+                    <strong
+                      className={`payment-text payment-${String(
+                        paymentStatus
+                      ).toLowerCase()}`}
+                    >
+                      {formatStatus(paymentStatus)}
+                    </strong>
+                  </div>
+
+                </div>
 
                 {/* ========================================
-                    ORDER INFO
+                    ORDER DETAILS
                 ======================================== */}
 
                 <div className="order-info">
 
                   <div className="order-info-item">
-
                     <span className="order-info-label">
                       Total Amount
                     </span>
 
-                    <strong>
+                    <strong className="order-total">
                       ₹
                       {Number(total).toLocaleString(
                         "en-IN",
                         {
                           minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
                         }
                       )}
                     </strong>
-
                   </div>
 
-
                   <div className="order-info-item">
-
                     <span className="order-info-label">
-                      Payment
+                      Payment Method
                     </span>
 
-                    <span
-                      className={`order-status payment-${paymentStatus}`}
-                    >
-                      {paymentStatus}
-                    </span>
-
+                    <strong>
+                      {paymentMethod === "online"
+                        ? "Online Payment"
+                        : "Cash on Delivery"}
+                    </strong>
                   </div>
 
-
                   <div className="order-info-item">
-
                     <span className="order-info-label">
-                      Order Status
+                      Items
                     </span>
 
-                    <span
-                      className={`order-status status-${status}`}
-                    >
-                      {status}
-                    </span>
-
+                    <strong>
+                      {totalItems}{" "}
+                      {totalItems === 1
+                        ? "Item"
+                        : "Items"}
+                    </strong>
                   </div>
 
                 </div>
-
 
                 {/* ========================================
                     PRODUCTS
@@ -236,62 +334,81 @@ function Orders() {
                 {items.length > 0 && (
                   <div className="order-products">
 
-                    <span className="order-info-label">
-                      Items
-                    </span>
+                    <div className="order-products-heading">
+                      <span className="order-info-label">
+                        ORDER ITEMS
+                      </span>
+
+                      {items.length > 3 && (
+                        <span className="more-items">
+                          +{items.length - 3} more
+                        </span>
+                      )}
+                    </div>
 
                     <div className="order-product-list">
 
                       {items
                         .slice(0, 3)
                         .map((item, itemIndex) => (
-
                           <div
                             className="order-product"
                             key={
                               item.id ||
-                              itemIndex
+                              `${orderId}-${itemIndex}`
                             }
                           >
 
-                            <span className="order-product-icon">
-                              🛍️
-                            </span>
+                            <div className="order-product-icon">
+                              <span>▣</span>
+                            </div>
 
-                            <div>
+                            <div className="order-product-details">
+
                               <strong>
                                 {item.product_name ||
                                   item.name ||
-                                  "Product"}
+                                  "Vynora Product"}
                               </strong>
 
                               <span>
                                 Qty:{" "}
                                 {item.quantity || 1}
                               </span>
+
                             </div>
 
-                          </div>
+                            {item.price && (
+                              <strong className="order-product-price">
+                                ₹
+                                {Number(
+                                  item.price
+                                ).toLocaleString(
+                                  "en-IN"
+                                )}
+                              </strong>
+                            )}
 
+                          </div>
                         ))}
 
                     </div>
-
-                    {items.length > 3 && (
-                      <span className="more-items">
-                        +{items.length - 3} more items
-                      </span>
-                    )}
-
                   </div>
                 )}
-
 
                 {/* ========================================
                     ORDER FOOTER
                 ======================================== */}
 
                 <div className="order-card-footer">
+
+                  <div className="order-footer-note">
+                    <span>✓</span>
+
+                    <p>
+                      Thank you for shopping with Vynora.
+                    </p>
+                  </div>
 
                   <Link
                     to={`/orders/${orderId}`}
@@ -303,31 +420,26 @@ function Orders() {
 
                 </div>
 
-              </div>
+              </article>
             );
           })}
-
         </div>
 
-
         {/* ========================================
-            CONTINUE SHOPPING
+            BOTTOM SHOPPING
         ======================================== */}
 
         <div className="orders-bottom">
-
           <Link
             to="/products"
             className="continue-shopping-link"
           >
             ← Continue Shopping
           </Link>
-
         </div>
 
       </div>
-
-    </div>
+    </main>
   );
 }
 

@@ -19,6 +19,7 @@ class OrderItemSerializer(serializers.ModelSerializer):
             "quantity",
             "price",
         ]
+
         read_only_fields = [
             "id",
             "product_name",
@@ -34,6 +35,7 @@ class OrderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Order
+
         fields = [
             "id",
             "user",
@@ -45,6 +47,7 @@ class OrderSerializer(serializers.ModelSerializer):
             "created_at",
             "updated_at",
         ]
+
         read_only_fields = [
             "id",
             "user",
@@ -83,6 +86,9 @@ class OrderSerializer(serializers.ModelSerializer):
             total_amount += price * quantity
 
         order.total_amount = total_amount
-        order.save(update_fields=["total_amount"])
+
+        order.save(
+            update_fields=["total_amount"]
+        )
 
         return order

@@ -13,15 +13,14 @@ function Navbar() {
   // LOGIN STATUS
   // ========================================
 
-  const isLoggedIn =
-    localStorage.getItem("vynora_logged_in") === "true";
+  const isLoggedIn = localStorage.getItem("vynora_logged_in") === "true";
 
   // ========================================
   // LANGUAGE
   // ========================================
 
   const [language, setLanguage] = useState(
-    localStorage.getItem("vynora_language") || "English"
+    localStorage.getItem("vynora_language") || "English",
   );
 
   // ========================================
@@ -32,9 +31,7 @@ function Navbar() {
     e.preventDefault();
 
     if (search.trim()) {
-      navigate(
-        `/products?search=${encodeURIComponent(search.trim())}`
-      );
+      navigate(`/products?search=${encodeURIComponent(search.trim())}`);
 
       setSearch("");
       setMenuOpen(false);
@@ -48,17 +45,11 @@ function Navbar() {
   const handleLanguageChange = (selectedLanguage) => {
     setLanguage(selectedLanguage);
 
-    localStorage.setItem(
-      "vynora_language",
-      selectedLanguage
-    );
+    localStorage.setItem("vynora_language", selectedLanguage);
 
     setLanguageOpen(false);
 
-    console.log(
-      "Selected language:",
-      selectedLanguage
-    );
+    console.log("Selected language:", selectedLanguage);
 
     // Full translation system can be connected later.
   };
@@ -90,30 +81,21 @@ function Navbar() {
 
   return (
     <nav className="vynora-navbar">
-
       <div className="vynora-navbar-container">
-
         {/* ========================================
             LOGO
         ======================================== */}
 
-        <Link
-          to="/"
-          className="vynora-logo"
-          onClick={closeMenus}
-        >
+        <Link to="/" className="vynora-logo" onClick={closeMenus}>
           VYNORA
         </Link>
-
 
         {/* ========================================
             MOBILE MENU BUTTON
         ======================================== */}
 
         <button
-          className={`vynora-menu-btn ${
-            menuOpen ? "active" : ""
-          }`}
+          className={`vynora-menu-btn ${menuOpen ? "active" : ""}`}
           type="button"
           aria-label="Toggle menu"
           aria-expanded={menuOpen}
@@ -128,23 +110,18 @@ function Navbar() {
           <span></span>
         </button>
 
-
         {/* ========================================
             NAVBAR CONTENT
         ======================================== */}
 
         <div
-          className={`vynora-navbar-content ${
-            menuOpen ? "mobile-open" : ""
-          }`}
+          className={`vynora-navbar-content ${menuOpen ? "mobile-open" : ""}`}
         >
-
           {/* ========================================
               CATEGORY LINKS
           ======================================== */}
 
           <div className="vynora-category-links">
-
             <Link
               to="/products?gender=men"
               className="vynora-nav-link"
@@ -184,48 +161,33 @@ function Navbar() {
             >
               BEAUTY
             </Link>
-
           </div>
-
 
           {/* ========================================
               RIGHT SECTION
           ======================================== */}
 
           <div className="vynora-right">
-
-
             {/* ========================================
                 SEARCH
             ======================================== */}
 
-            <form
-              className="vynora-search"
-              onSubmit={handleSearch}
-            >
-
-              <span className="search-icon">
-                🔍
-              </span>
+            <form className="vynora-search" onSubmit={handleSearch}>
+              <span className="search-icon">🔍</span>
 
               <input
                 type="text"
                 placeholder="Search products, brands..."
                 value={search}
-                onChange={(e) =>
-                  setSearch(e.target.value)
-                }
+                onChange={(e) => setSearch(e.target.value)}
               />
-
             </form>
-
 
             {/* ========================================
                 LANGUAGE
             ======================================== */}
 
             <div className="vynora-language-wrapper">
-
               <button
                 type="button"
                 className="vynora-language-btn"
@@ -235,58 +197,33 @@ function Navbar() {
                 }}
                 aria-expanded={languageOpen}
               >
-
                 <span>🌐</span>
 
-                <span>
-                  {language === "English"
-                    ? "EN"
-                    : "हिं"}
-                </span>
+                <span>{language === "English" ? "EN" : "हिं"}</span>
 
-                <span className="language-arrow">
-                  ▾
-                </span>
-
+                <span className="language-arrow">▾</span>
               </button>
-
 
               {languageOpen && (
                 <div className="vynora-language-dropdown">
-
                   <button
                     type="button"
-                    className={
-                      language === "English"
-                        ? "active"
-                        : ""
-                    }
-                    onClick={() =>
-                      handleLanguageChange("English")
-                    }
+                    className={language === "English" ? "active" : ""}
+                    onClick={() => handleLanguageChange("English")}
                   >
                     🇬🇧 English
                   </button>
 
                   <button
                     type="button"
-                    className={
-                      language === "Hindi"
-                        ? "active"
-                        : ""
-                    }
-                    onClick={() =>
-                      handleLanguageChange("Hindi")
-                    }
+                    className={language === "Hindi" ? "active" : ""}
+                    onClick={() => handleLanguageChange("Hindi")}
                   >
                     🇮🇳 हिंदी
                   </button>
-
                 </div>
               )}
-
             </div>
-
 
             {/* ========================================
                 PROFILE
@@ -294,14 +231,9 @@ function Navbar() {
 
             <div
               className="vynora-profile-wrapper"
-              onMouseEnter={() =>
-                setProfileOpen(true)
-              }
-              onMouseLeave={() =>
-                setProfileOpen(false)
-              }
+              onMouseEnter={() => setProfileOpen(true)}
+              onMouseLeave={() => setProfileOpen(false)}
             >
-
               <button
                 type="button"
                 className="vynora-icon-link profile-button"
@@ -311,50 +243,32 @@ function Navbar() {
                 }}
                 aria-expanded={profileOpen}
               >
+                <span className="nav-icon">👤</span>
 
-                <span className="nav-icon">
-                  👤
-                </span>
-
-                <span className="nav-icon-label">
-                  Profile
-                </span>
-
+                <span className="nav-icon-label">Profile</span>
               </button>
-
 
               {profileOpen && (
                 <div className="vynora-profile-dropdown">
-
                   {/* ========================================
                       DROPDOWN HEADER
                   ======================================== */}
 
                   <div className="profile-dropdown-header">
-
-                    <div className="profile-dropdown-icon">
-                      👤
-                    </div>
+                    <div className="profile-dropdown-icon">👤</div>
 
                     <div>
-
-                      <strong>
-                        Welcome to Vynora
-                      </strong>
+                      <strong>Welcome to Vynora</strong>
 
                       <span>
                         {isLoggedIn
                           ? "Manage your account"
                           : "Login to your account"}
                       </span>
-
                     </div>
-
                   </div>
 
-
                   <div className="profile-dropdown-divider"></div>
-
 
                   {/* ========================================
                       LOGGED IN
@@ -362,40 +276,38 @@ function Navbar() {
 
                   {isLoggedIn ? (
                     <>
-
                       {/* MY PROFILE */}
 
                       <Link
                         to="/profile"
                         className="profile-dropdown-item"
-                        onClick={() =>
-                          setProfileOpen(false)
-                        }
+                        onClick={() => setProfileOpen(false)}
                       >
                         <span>👤</span>
 
-                        <span>
-                          My Profile
-                        </span>
+                        <span>My Profile</span>
                       </Link>
-
 
                       {/* MY ORDERS */}
 
                       <Link
                         to="/orders"
                         className="profile-dropdown-item"
-                        onClick={() =>
-                          setProfileOpen(false)
-                        }
+                        onClick={() => setProfileOpen(false)}
                       >
                         <span>📦</span>
 
-                        <span>
-                          My Orders
-                        </span>
+                        <span>My Orders</span>
                       </Link>
 
+                      <Link to="/payments" className="profile-dropdown-item">
+                        <span>💳</span>
+                        <div>
+                          <strong>My Payments</strong>
+                          <small>View your payment history</small>
+                        </div>
+                        <span>→</span>
+                      </Link>
 
                       {/* SIGN OUT */}
 
@@ -406,62 +318,43 @@ function Navbar() {
                       >
                         <span>🚪</span>
 
-                        <span>
-                          Sign Out
-                        </span>
+                        <span>Sign Out</span>
                       </button>
-
                     </>
-
                   ) : (
-
                     /* ========================================
                        LOGGED OUT
                     ======================================== */
 
                     <>
-
                       {/* LOGIN */}
 
                       <Link
                         to="/login"
                         className="profile-dropdown-item"
-                        onClick={() =>
-                          setProfileOpen(false)
-                        }
+                        onClick={() => setProfileOpen(false)}
                       >
                         <span>🔐</span>
 
-                        <span>
-                          Login
-                        </span>
+                        <span>Login</span>
                       </Link>
-
 
                       {/* SIGN UP */}
 
                       <Link
                         to="/register"
                         className="profile-dropdown-item signup"
-                        onClick={() =>
-                          setProfileOpen(false)
-                        }
+                        onClick={() => setProfileOpen(false)}
                       >
                         <span>✨</span>
 
-                        <span>
-                          Sign Up
-                        </span>
+                        <span>Sign Up</span>
                       </Link>
-
                     </>
                   )}
-
                 </div>
               )}
-
             </div>
-
 
             {/* ========================================
                 WISHLIST
@@ -472,44 +365,23 @@ function Navbar() {
               className="vynora-icon-link"
               onClick={closeMenus}
             >
+              <span className="nav-icon">♡</span>
 
-              <span className="nav-icon">
-                ♡
-              </span>
-
-              <span className="nav-icon-label">
-                Wishlist
-              </span>
-
+              <span className="nav-icon-label">Wishlist</span>
             </Link>
-
 
             {/* ========================================
                 CART
             ======================================== */}
 
-            <Link
-              to="/cart"
-              className="vynora-icon-link"
-              onClick={closeMenus}
-            >
+            <Link to="/cart" className="vynora-icon-link" onClick={closeMenus}>
+              <span className="nav-icon">🛒</span>
 
-              <span className="nav-icon">
-                🛒
-              </span>
-
-              <span className="nav-icon-label">
-                Cart
-              </span>
-
+              <span className="nav-icon-label">Cart</span>
             </Link>
-
           </div>
-
         </div>
-
       </div>
-
     </nav>
   );
 }

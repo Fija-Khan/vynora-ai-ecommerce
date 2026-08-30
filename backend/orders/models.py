@@ -7,44 +7,76 @@ from products.models import Product
 class Order(models.Model):
 
     STATUS_CHOICES = [
-        ('pending', 'Pending'),
-        ('confirmed', 'Confirmed'),
-        ('shipped', 'Shipped'),
-        ('delivered', 'Delivered'),
-        ('cancelled', 'Cancelled'),
+        ("pending", "Pending"),
+        ("confirmed", "Confirmed"),
+        ("shipped", "Shipped"),
+        ("delivered", "Delivered"),
+        ("cancelled", "Cancelled"),
+    ]
+
+    PAYMENT_METHOD_CHOICES = [
+        ("cod", "Cash on Delivery"),
+        ("online", "Online Payment"),
     ]
 
     PAYMENT_STATUS_CHOICES = [
-        ('pending', 'Pending'),
-        ('paid', 'Paid'),
-        ('failed', 'Failed'),
-        ('refunded', 'Refunded'),
+        ("pending", "Pending"),
+        ("paid", "Paid"),
+        ("failed", "Failed"),
+        ("refunded", "Refunded"),
     ]
 
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
-        related_name='orders'
+        related_name="orders",
+    )
+
+    full_name = models.CharField(
+        max_length=150
+    )
+
+    mobile = models.CharField(
+        max_length=10
+    )
+
+    shipping_address = models.TextField()
+
+    city = models.CharField(
+        max_length=100
+    )
+
+    state = models.CharField(
+        max_length=100
+    )
+
+    pincode = models.CharField(
+        max_length=6
+    )
+
+    payment_method = models.CharField(
+        max_length=20,
+        choices=PAYMENT_METHOD_CHOICES,
+        default="cod",
     )
 
     total_amount = models.DecimalField(
         max_digits=12,
-        decimal_places=2
+        decimal_places=2,
+        default=0,
     )
 
     status = models.CharField(
         max_length=20,
         choices=STATUS_CHOICES,
-        default='pending'
+        default="pending",
     )
 
     payment_status = models.CharField(
         max_length=20,
         choices=PAYMENT_STATUS_CHOICES,
-        default='pending'
+        default="pending",
     )
-
-    shipping_address = models.TextField()
 
     created_at = models.DateTimeField(
         auto_now_add=True
@@ -63,13 +95,13 @@ class OrderItem(models.Model):
     order = models.ForeignKey(
         Order,
         on_delete=models.CASCADE,
-        related_name='items'
+        related_name="items",
     )
 
     product = models.ForeignKey(
         Product,
         on_delete=models.PROTECT,
-        related_name='order_items'
+        related_name="order_items",
     )
 
     quantity = models.PositiveIntegerField(
@@ -78,7 +110,7 @@ class OrderItem(models.Model):
 
     price = models.DecimalField(
         max_digits=10,
-        decimal_places=2
+        decimal_places=2,
     )
 
     def __str__(self):

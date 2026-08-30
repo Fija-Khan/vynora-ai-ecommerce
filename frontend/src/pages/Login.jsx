@@ -10,6 +10,8 @@ function Login() {
     password: "",
   });
 
+  const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -35,9 +37,8 @@ function Login() {
   const handleLogin = async (e) => {
     e.preventDefault();
 
-    // Basic validation
     if (!formData.username.trim() || !formData.password) {
-      setError("Please enter username and password.");
+      setError("Please enter your username and password.");
       return;
     }
 
@@ -68,8 +69,12 @@ function Login() {
       if (!response.ok) {
         if (data.detail) {
           setError(data.detail);
-        } else if (data.non_field_errors) {
+        } else if (data.non_field_errors?.length > 0) {
           setError(data.non_field_errors[0]);
+        } else if (data.username?.length > 0) {
+          setError(data.username[0]);
+        } else if (data.password?.length > 0) {
+          setError(data.password[0]);
         } else {
           setError("Invalid username or password.");
         }
@@ -81,24 +86,47 @@ function Login() {
       // SAVE JWT TOKENS
       // =========================================
 
-      localStorage.setItem(
-        "vynora_access_token",
-        data.access
-      );
+      if (data.access) {
+        localStorage.setItem(
+          "vynora_access_token",
+          data.access
+        );
+      }
 
-      localStorage.setItem(
-        "vynora_refresh_token",
-        data.refresh
-      );
+      if (data.refresh) {
+        localStorage.setItem(
+          "vynora_refresh_token",
+          data.refresh
+        );
+      }
 
       // =========================================
-      // SAVE LOGIN STATUS
-      // Navbar uses this value
+      // LOGIN STATUS
       // =========================================
 
       localStorage.setItem(
         "vynora_logged_in",
         "true"
+      );
+
+      // =========================================
+      // SAVE USER DATA
+      // =========================================
+
+      if (data.user) {
+        localStorage.setItem(
+          "vynora_user",
+          JSON.stringify(data.user)
+        );
+      }
+
+      // =========================================
+      // REMEMBER ME
+      // =========================================
+
+      localStorage.setItem(
+        "vynora_remember_me",
+        rememberMe ? "true" : "false"
       );
 
       // =========================================
@@ -117,54 +145,76 @@ function Login() {
     }
   };
 
+  // =========================================
+  // RETURN
+  // =========================================
+
   return (
     <main className="login-page">
 
-      <div className="login-container">
+      <div className="login-background-decoration login-decoration-one" />
+      <div className="login-background-decoration login-decoration-two" />
 
-        {/* ========================================
+      <div className="login-wrapper">
+
+        {/* =====================================
+            BRAND
+        ====================================== */}
+
+        <div className="login-brand">
+          <Link to="/" className="login-logo">
+            VYNORA
+          </Link>
+
+          <span className="login-brand-subtitle">
+            MODERN · ELEGANT · ESSENTIAL
+          </span>
+        </div>
+
+        {/* =====================================
             LOGIN CARD
-        ======================================== */}
+        ====================================== */}
 
         <section className="login-card">
 
-          {/* ========================================
-              LOGIN HEADER
-          ======================================== */}
+          {/* HEADER */}
 
           <div className="login-header">
 
             <span className="login-eyebrow">
-              VYNORA ACCOUNT
+              WELCOME BACK
             </span>
 
             <h1>
-              Welcome Back
+              Sign in to your account
             </h1>
 
             <p>
-              Login to continue shopping with Vynora.
+              Continue your journey with Vynora.
             </p>
 
           </div>
 
-
-          {/* ========================================
-              ERROR MESSAGE
-          ======================================== */}
+          {/* ERROR */}
 
           {error && (
             <div className="login-error">
-              {error}
+              <span className="login-error-icon">
+                !
+              </span>
+
+              <span>
+                {error}
+              </span>
             </div>
           )}
 
+          {/* FORM */}
 
-          {/* ========================================
-              LOGIN FORM
-          ======================================== */}
-
-          <form onSubmit={handleLogin}>
+          <form
+            className="login-form"
+            onSubmit={handleLogin}
+          >
 
             {/* USERNAME */}
 
@@ -174,43 +224,119 @@ function Login() {
                 Username
               </label>
 
-              <input
-                id="username"
-                type="text"
-                name="username"
-                placeholder="Enter your username"
-                value={formData.username}
-                onChange={handleChange}
-                autoComplete="username"
-                disabled={loading}
-              />
+              <div className="login-input-container">
+
+                <span className="login-field-icon">
+                  ◯
+                </span>
+
+                <input
+                  id="username"
+                  type="text"
+                  name="username"
+                  placeholder="Enter your username"
+                  value={formData.username}
+                  onChange={handleChange}
+                  autoComplete="username"
+                  disabled={loading}
+                />
+
+              </div>
 
             </div>
-
 
             {/* PASSWORD */}
 
             <div className="login-field">
 
-              <label htmlFor="password">
-                Password
-              </label>
+              <div className="login-label-row">
 
-              <input
-                id="password"
-                type="password"
-                name="password"
-                placeholder="Enter your password"
-                value={formData.password}
-                onChange={handleChange}
-                autoComplete="current-password"
-                disabled={loading}
-              />
+                <label htmlFor="password">
+                  Password
+                </label>
+
+                <Link
+                  to="/forgot-password"
+                  className="forgot-password"
+                  onClick={(e) =>
+                    e.preventDefault()
+                  }
+                >
+                  Forgot Password?
+                </Link>
+
+              </div>
+
+              <div className="login-input-container">
+
+                <span className="login-field-icon">
+                  ◉
+                </span>
+
+                <input
+                  id="password"
+                  type={
+                    showPassword
+                      ? "text"
+                      : "password"
+                  }
+                  name="password"
+                  placeholder="Enter your password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  autoComplete="current-password"
+                  disabled={loading}
+                />
+
+                <button
+                  type="button"
+                  className="password-toggle"
+                  onClick={() =>
+                    setShowPassword(
+                      (previous) => !previous
+                    )
+                  }
+                  disabled={loading}
+                >
+                  {showPassword
+                    ? "Hide"
+                    : "Show"}
+                </button>
+
+              </div>
 
             </div>
 
+            {/* REMEMBER ME */}
 
-            {/* LOGIN BUTTON */}
+            <div className="login-options">
+
+              <label className="remember-me">
+
+                <input
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={(e) =>
+                    setRememberMe(
+                      e.target.checked
+                    )
+                  }
+                  disabled={loading}
+                />
+
+                <span className="custom-checkbox">
+                  ✓
+                </span>
+
+                <span>
+                  Remember me
+                </span>
+
+              </label>
+
+            </div>
+
+            {/* SIGN IN */}
 
             <button
               type="submit"
@@ -219,11 +345,16 @@ function Login() {
             >
 
               {loading ? (
-                "Logging in..."
+                <>
+                  <span className="login-spinner" />
+                  Signing in...
+                </>
               ) : (
                 <>
-                  Login
-                  <span>→</span>
+                  Sign In
+                  <span className="login-btn-arrow">
+                    →
+                  </span>
                 </>
               )}
 
@@ -231,10 +362,13 @@ function Login() {
 
           </form>
 
+          {/* DIVIDER */}
 
-          {/* ========================================
-              REGISTER
-          ======================================== */}
+          <div className="login-divider">
+            <span>OR</span>
+          </div>
+
+          {/* REGISTER */}
 
           <div className="login-register">
 
@@ -248,10 +382,29 @@ function Login() {
 
           </div>
 
+          {/* SECURITY */}
+
+          <div className="login-security">
+
+            <span className="security-icon">
+              ✓
+            </span>
+
+            <span>
+              Secure &amp; private shopping experience
+            </span>
+
+          </div>
+
         </section>
 
-      </div>
+        {/* FOOTER */}
 
+        <p className="login-footer">
+          © {new Date().getFullYear()} Vynora
+        </p>
+
+      </div>
     </main>
   );
 }
