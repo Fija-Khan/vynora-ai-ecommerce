@@ -9,6 +9,7 @@ function Checkout() {
   // =========================================
   // LOAD CART
   // =========================================
+
   const [cartItems] = useState(() => {
     try {
       const savedCart = localStorage.getItem("vynora_cart");
@@ -29,6 +30,7 @@ function Checkout() {
   // =========================================
   // FORM DATA
   // =========================================
+
   const [formData, setFormData] = useState({
     fullName: "",
     mobile: "",
@@ -45,6 +47,7 @@ function Checkout() {
   // =========================================
   // IMAGE URL
   // =========================================
+
   const getImageUrl = (image) => {
     if (!image) {
       return "/images/product-placeholder.jpg";
@@ -63,6 +66,7 @@ function Checkout() {
   // =========================================
   // FORM CHANGE
   // =========================================
+
   const handleChange = (e) => {
     const { name, value } = e.target;
 
@@ -77,6 +81,7 @@ function Checkout() {
   // =========================================
   // PRICE CALCULATIONS
   // =========================================
+
   const subtotal = cartItems.reduce(
     (total, item) =>
       total +
@@ -98,24 +103,30 @@ function Checkout() {
 
   // =========================================
   // PLACE ORDER
-  // BACKEND API
   // =========================================
+
   const handlePlaceOrder = async (e) => {
     e.preventDefault();
 
+    console.log("=================================");
+    console.log("PLACE ORDER CLICKED");
+    console.log("=================================");
+
     setError("");
 
-    // -----------------------------------------
+    // =========================================
     // EMPTY CART
-    // -----------------------------------------
+    // =========================================
+
     if (cartItems.length === 0) {
-      navigate("/products");
+      setError("Your cart is empty.");
       return;
     }
 
-    // -----------------------------------------
+    // =========================================
     // CLEAN FORM VALUES
-    // -----------------------------------------
+    // =========================================
+
     const fullName = formData.fullName.trim();
     const mobile = formData.mobile.trim();
     const address = formData.address.trim();
@@ -123,9 +134,10 @@ function Checkout() {
     const state = formData.state.trim();
     const pincode = formData.pincode.trim();
 
-    // -----------------------------------------
+    // =========================================
     // REQUIRED FIELDS
-    // -----------------------------------------
+    // =========================================
+
     if (
       !fullName ||
       !mobile ||
@@ -140,9 +152,10 @@ function Checkout() {
       return;
     }
 
-    // -----------------------------------------
+    // =========================================
     // MOBILE VALIDATION
-    // -----------------------------------------
+    // =========================================
+
     if (!/^[6-9]\d{9}$/.test(mobile)) {
       setError(
         "Please enter a valid 10-digit mobile number."
@@ -150,9 +163,10 @@ function Checkout() {
       return;
     }
 
-    // -----------------------------------------
+    // =========================================
     // PINCODE VALIDATION
-    // -----------------------------------------
+    // =========================================
+
     if (!/^\d{6}$/.test(pincode)) {
       setError(
         "Please enter a valid 6-digit pincode."
@@ -164,60 +178,126 @@ function Checkout() {
       setLoading(true);
 
       // =========================================
-      // GET AUTH TOKEN
+      // GET ACCESS TOKEN
       // =========================================
-      const accessToken =
-        localStorage.getItem("access_token");
+
+      const accessToken = localStorage.getItem(
+        "vynora_access_token"
+      );
+
+      console.log(
+        "Access token:",
+        accessToken ? "FOUND" : "NOT FOUND"
+      );
+
+      // =========================================
+      // LOGIN REQUIRED
+      // =========================================
+
+      if (!accessToken) {
+        setError(
+          "Please login before placing an order."
+        );
+
+        setLoading(false);
+
+        return;
+      }
+
+      // =========================================
+      // CHECK PRODUCT IDS
+      // =========================================
+
+      const invalidItem = cartItems.find(
+        (item) =>
+          !(
+            item.product ||
+            item.product_id ||
+            item.id
+          )
+      );
+
+      if (invalidItem) {
+        console.error(
+          "Invalid cart item:",
+          invalidItem
+        );
+
+        setError(
+          "One or more products in your cart are invalid. Please remove them and try again."
+        );
+
+        setLoading(false);
+
+        return;
+      }
+
+      // =========================================
+      // PREPARE ORDER ITEMS
+      // =========================================
+
+      const orderItems = cartItems.map((item) => ({
+        product:
+          item.product ||
+          item.product_id ||
+          item.id,
+
+        quantity: Number(item.quantity || 1),
+      }));
 
       // =========================================
       // PREPARE ORDER DATA
       // =========================================
+
       const orderData = {
-        items: cartItems.map((item) => ({
-          product:
-            item.product ||
-            item.product_id ||
-            item.id,
-
-          quantity: Number(item.quantity || 1),
-
-          price: Number(item.price || 0),
-
-          selected_color:
-            item.selectedColor || "",
-
-          selected_size:
-            item.selectedSize || "",
-        })),
+        items: orderItems,
 
         full_name: fullName,
+
         mobile: mobile,
-        address: address,
+
+        shipping_address: address,
+
         city: city,
+
         state: state,
+
         pincode: pincode,
 
         payment_method: paymentMethod,
-
-        subtotal: subtotal,
-        delivery_charge: deliveryCharge,
-        total_amount: total,
       };
+
+      console.log(
+        "================================="
+      );
+
+      console.log(
+        "SENDING ORDER DATA:"
+      );
+
+      console.log(
+        JSON.stringify(orderData, null, 2)
+      );
+
+      console.log(
+        "================================="
+      );
 
       // =========================================
       // API CONFIG
       // =========================================
-      const config = {};
 
-      if (accessToken) {
-        config.headers = {
+      const config = {
+        headers: {
           Authorization: `Bearer ${accessToken}`,
-        };
-      }
+          "Content-Type": "application/json",
+        },
+      };
 
       // =========================================
       // CREATE ORDER
       // =========================================
+
       const response = await axios.post(
         "http://127.0.0.1:8000/api/orders/",
         orderData,
@@ -225,97 +305,303 @@ function Checkout() {
       );
 
       console.log(
-        "Order created successfully:",
+        "================================="
+      );
+
+      console.log(
+        "ORDER CREATED SUCCESSFULLY"
+      );
+
+      console.log(
+        "Backend response:",
         response.data
       );
+
+      console.log(
+        "================================="
+      );
+
+      // =========================================
+      // GET CREATED ORDER
+      // =========================================
+
+      const createdOrder = response.data;
 
       // =========================================
       // SAVE LAST ORDER
       // =========================================
+
       localStorage.setItem(
         "vynora_last_order",
-        JSON.stringify(response.data)
+        JSON.stringify(createdOrder)
+      );
+
+      console.log(
+        "Last order saved:",
+        localStorage.getItem(
+          "vynora_last_order"
+        )
       );
 
       // =========================================
-      // SAVE ORDER FOR ORDERS PAGE
+      // LOAD EXISTING ORDERS
       // =========================================
-      const existingOrders = JSON.parse(
-        localStorage.getItem("vynora_orders") || "[]"
-      );
+
+      let existingOrders = [];
+
+      try {
+        const savedOrders =
+          localStorage.getItem(
+            "vynora_orders"
+          );
+
+        console.log(
+          "Existing orders before save:",
+          savedOrders
+        );
+
+        if (savedOrders) {
+          const parsedOrders =
+            JSON.parse(savedOrders);
+
+          if (Array.isArray(parsedOrders)) {
+            existingOrders = parsedOrders;
+          }
+        }
+      } catch (storageError) {
+        console.error(
+          "Failed to read existing orders:",
+          storageError
+        );
+
+        existingOrders = [];
+      }
+
+      // =========================================
+      // ADD NEW ORDER
+      // =========================================
 
       const updatedOrders = [
-        response.data,
+        createdOrder,
         ...existingOrders,
       ];
+
+      // =========================================
+      // SAVE ALL ORDERS
+      // =========================================
 
       localStorage.setItem(
         "vynora_orders",
         JSON.stringify(updatedOrders)
       );
 
+      console.log(
+        "================================="
+      );
+
+      console.log(
+        "ORDERS SAVED:"
+      );
+
+      console.log(
+        localStorage.getItem(
+          "vynora_orders"
+        )
+      );
+
+      console.log(
+        "================================="
+      );
+
       // =========================================
       // CLEAR CART
       // =========================================
-      localStorage.removeItem("vynora_cart");
+
+      localStorage.removeItem(
+        "vynora_cart"
+      );
+
+      console.log(
+        "Cart cleared."
+      );
 
       // =========================================
       // SUCCESS PAGE
       // =========================================
+
       navigate("/order-success");
+
     } catch (error) {
       console.error(
-        "Order creation failed:",
+        "================================="
+      );
+
+      console.error(
+        "ORDER CREATION FAILED"
+      );
+
+      console.error(
         error
       );
 
-      // -----------------------------------------
-      // BACKEND ERROR
-      // -----------------------------------------
+      console.error(
+        "================================="
+      );
+
+      // =========================================
+      // BACKEND RESPONSE
+      // =========================================
+
       if (error.response) {
+        console.error(
+          "Backend status:",
+          error.response.status
+        );
+
         console.error(
           "Backend response:",
           error.response.data
         );
 
-        if (error.response.status === 401) {
+        // =========================================
+        // 401 UNAUTHORIZED
+        // =========================================
+
+        if (
+          error.response.status === 401
+        ) {
           setError(
-            "Please login before placing an order."
+            "Your login session is invalid or expired. Please login again."
           );
+
           return;
         }
 
-        if (error.response.data) {
-          const backendError =
-            error.response.data.detail ||
-            error.response.data.message;
+        // =========================================
+        // 400 VALIDATION ERROR
+        // =========================================
 
-          if (backendError) {
-            setError(backendError);
-            return;
+        if (
+          error.response.status === 400
+        ) {
+          const backendData =
+            error.response.data;
+
+          if (
+            typeof backendData ===
+              "object" &&
+            backendData !== null
+          ) {
+            const messages =
+              Object.entries(
+                backendData
+              )
+                .map(
+                  ([field, message]) => {
+                    const formattedMessage =
+                      Array.isArray(message)
+                        ? message.join(
+                            ", "
+                          )
+                        : String(message);
+
+                    return `${field}: ${formattedMessage}`;
+                  }
+                )
+                .join(" | ");
+
+            setError(
+              messages ||
+                "Please check your order details."
+            );
+          } else {
+            setError(
+              "Please check your order details."
+            );
           }
+
+          return;
+        }
+
+        // =========================================
+        // 403 FORBIDDEN
+        // =========================================
+
+        if (
+          error.response.status === 403
+        ) {
+          setError(
+            "You are not allowed to place this order."
+          );
+
+          return;
+        }
+
+        // =========================================
+        // 404 NOT FOUND
+        // =========================================
+
+        if (
+          error.response.status === 404
+        ) {
+          setError(
+            "Order API endpoint was not found. Please check your Django URL."
+          );
+
+          return;
+        }
+
+        // =========================================
+        // OTHER BACKEND ERRORS
+        // =========================================
+
+        const backendError =
+          error.response.data?.detail ||
+          error.response.data?.message;
+
+        if (backendError) {
+          setError(
+            String(backendError)
+          );
+
+          return;
         }
 
         setError(
-          "Unable to place order. Please check your details."
+          "Unable to place order. Please try again."
         );
-      } else if (error.request) {
+
+        return;
+      }
+
+      // =========================================
+      // SERVER NOT RESPONDING
+      // =========================================
+
+      if (error.request) {
         setError(
           "Backend server is not responding. Please start Django server."
         );
-      } else {
-        setError(
-          "Something went wrong. Please try again."
-        );
+
+        return;
       }
+
+      // =========================================
+      // UNKNOWN ERROR
+      // =========================================
+
+      setError(
+        "Something went wrong. Please try again."
+      );
     } finally {
       setLoading(false);
     }
   };
 
   // =========================================
-  // EMPTY CART
+  // EMPTY CART PAGE
   // =========================================
+
   if (cartItems.length === 0) {
     return (
       <main className="checkout-page">
@@ -332,9 +618,9 @@ function Checkout() {
             <h1>Your Cart is Empty</h1>
 
             <p>
-              There are no products in your cart.
-              Add something you love and come back
-              to checkout.
+              There are no products in your
+              cart. Add something you love and
+              come back to checkout.
             </p>
 
             <Link
@@ -353,13 +639,12 @@ function Checkout() {
   // =========================================
   // CHECKOUT PAGE
   // =========================================
+
   return (
     <main className="checkout-page">
       <div className="checkout-container">
 
-        {/* =========================================
-            HEADER
-        ========================================= */}
+        {/* HEADER */}
 
         <div className="checkout-header">
           <div>
@@ -367,11 +652,14 @@ function Checkout() {
               VYNORA CHECKOUT
             </span>
 
-            <h1>Complete Your Order</h1>
+            <h1>
+              Complete Your Order
+            </h1>
 
             <p>
-              Enter your delivery details and choose
-              your preferred payment method.
+              Enter your delivery details
+              and choose your preferred
+              payment method.
             </p>
           </div>
 
@@ -383,9 +671,7 @@ function Checkout() {
           </Link>
         </div>
 
-        {/* =========================================
-            ERROR MESSAGE
-        ========================================= */}
+        {/* ERROR MESSAGE */}
 
         {error && (
           <div className="checkout-error">
@@ -394,40 +680,38 @@ function Checkout() {
           </div>
         )}
 
-        {/* =========================================
-            CHECKOUT LAYOUT
-        ========================================= */}
+        {/* CHECKOUT FORM */}
 
         <form
           className="checkout-layout"
           onSubmit={handlePlaceOrder}
         >
 
-          {/* =========================================
-              LEFT SIDE
-          ========================================= */}
+          {/* LEFT SIDE */}
 
           <div className="checkout-left">
 
-            {/* =========================================
-                DELIVERY ADDRESS
-            ========================================= */}
+            {/* DELIVERY ADDRESS */}
 
             <section className="checkout-card">
-
               <div className="checkout-card-heading">
+
                 <div className="checkout-number">
                   01
                 </div>
 
                 <div>
-                  <h2>Delivery Address</h2>
+                  <h2>
+                    Delivery Address
+                  </h2>
 
                   <p>
-                    Enter the address where you want
-                    your order delivered.
+                    Enter the address where
+                    you want your order
+                    delivered.
                   </p>
                 </div>
+
               </div>
 
               <div className="checkout-form-grid">
@@ -467,6 +751,7 @@ function Checkout() {
                     value={formData.mobile}
                     onChange={handleChange}
                     autoComplete="tel"
+                    inputMode="numeric"
                     disabled={loading}
                   />
                 </div>
@@ -552,25 +837,28 @@ function Checkout() {
               </div>
             </section>
 
-            {/* =========================================
-                PAYMENT
-            ========================================= */}
+            {/* PAYMENT */}
 
             <section className="checkout-card">
 
               <div className="checkout-card-heading">
+
                 <div className="checkout-number">
                   02
                 </div>
 
                 <div>
-                  <h2>Payment Method</h2>
+                  <h2>
+                    Payment Method
+                  </h2>
 
                   <p>
-                    Select how you would like to pay
-                    for your order.
+                    Select how you would
+                    like to pay for your
+                    order.
                   </p>
                 </div>
+
               </div>
 
               <div className="payment-options">
@@ -589,7 +877,8 @@ function Checkout() {
                     name="payment"
                     value="cod"
                     checked={
-                      paymentMethod === "cod"
+                      paymentMethod ===
+                      "cod"
                     }
                     onChange={(e) =>
                       setPaymentMethod(
@@ -609,7 +898,8 @@ function Checkout() {
                     </strong>
 
                     <span>
-                      Pay when your order arrives
+                      Pay when your order
+                      arrives
                     </span>
                   </div>
 
@@ -632,7 +922,8 @@ function Checkout() {
                     name="payment"
                     value="online"
                     checked={
-                      paymentMethod === "online"
+                      paymentMethod ===
+                      "online"
                     }
                     onChange={(e) =>
                       setPaymentMethod(
@@ -664,9 +955,7 @@ function Checkout() {
               </div>
             </section>
 
-            {/* =========================================
-                SECURITY
-            ========================================= */}
+            {/* SECURITY */}
 
             <div className="checkout-security">
 
@@ -675,11 +964,14 @@ function Checkout() {
               </div>
 
               <div>
-                <strong>Secure Checkout</strong>
+                <strong>
+                  Secure Checkout
+                </strong>
 
                 <p>
-                  Your information is protected and
-                  securely handled by Vynora.
+                  Your information is
+                  protected and securely
+                  handled by Vynora.
                 </p>
               </div>
 
@@ -687,20 +979,26 @@ function Checkout() {
 
           </div>
 
-          {/* =========================================
-              RIGHT SIDE
-          ========================================= */}
+          {/* RIGHT SIDE */}
 
           <aside className="checkout-summary">
 
+            {/* SUMMARY HEADER */}
+
             <div className="summary-heading">
               <div>
-                <h2>Order Summary</h2>
+
+                <h2>
+                  Order Summary
+                </h2>
 
                 <span>
                   {totalItems} item
-                  {totalItems !== 1 ? "s" : ""}
+                  {totalItems !== 1
+                    ? "s"
+                    : ""}
                 </span>
+
               </div>
             </div>
 
@@ -709,6 +1007,7 @@ function Checkout() {
             <div className="checkout-products">
 
               {cartItems.map((item) => {
+
                 const quantity = Number(
                   item.quantity || 1
                 );
@@ -721,15 +1020,20 @@ function Checkout() {
                   <div
                     className="checkout-product"
                     key={`${item.id}-${
-                      item.selectedColor || ""
+                      item.selectedColor ||
+                      ""
                     }-${
-                      item.selectedSize || ""
+                      item.selectedSize ||
+                      ""
                     }`}
                   >
+
                     <div className="checkout-product-image">
 
                       <img
-                        src={getImageUrl(item.image)}
+                        src={getImageUrl(
+                          item.image
+                        )}
                         alt={
                           item.name ||
                           "Vynora product"
@@ -745,7 +1049,8 @@ function Checkout() {
                     <div className="checkout-product-info">
 
                       <h3>
-                        {item.name}
+                        {item.name ||
+                          "Vynora Product"}
                       </h3>
 
                       {item.selectedColor && (
@@ -770,6 +1075,7 @@ function Checkout() {
                       </strong>
 
                     </div>
+
                   </div>
                 );
               })}
@@ -781,7 +1087,9 @@ function Checkout() {
             <div className="checkout-price-details">
 
               <div>
-                <span>Subtotal</span>
+                <span>
+                  Subtotal
+                </span>
 
                 <strong>
                   ₹
@@ -792,7 +1100,9 @@ function Checkout() {
               </div>
 
               <div>
-                <span>Delivery</span>
+                <span>
+                  Delivery
+                </span>
 
                 <strong
                   className={
@@ -814,11 +1124,14 @@ function Checkout() {
             {subtotal > 0 &&
               subtotal < 999 && (
                 <div className="checkout-delivery-note">
+
                   Add ₹
                   {(999 - subtotal).toLocaleString(
                     "en-IN"
                   )}{" "}
-                  more to unlock FREE delivery.
+                  more to unlock FREE
+                  delivery.
+
                 </div>
               )}
 
@@ -831,7 +1144,10 @@ function Checkout() {
             {/* TOTAL */}
 
             <div className="checkout-total">
-              <span>Total Amount</span>
+
+              <span>
+                Total Amount
+              </span>
 
               <strong>
                 ₹
@@ -839,6 +1155,7 @@ function Checkout() {
                   "en-IN"
                 )}
               </strong>
+
             </div>
 
             {/* PLACE ORDER */}
@@ -863,6 +1180,7 @@ function Checkout() {
 
               <div>
                 <strong>✓</strong>
+
                 <span>
                   100% Original Products
                 </span>
@@ -870,6 +1188,7 @@ function Checkout() {
 
               <div>
                 <strong>✓</strong>
+
                 <span>
                   Easy 14 days returns
                 </span>
@@ -877,6 +1196,7 @@ function Checkout() {
 
               <div>
                 <strong>✓</strong>
+
                 <span>
                   Secure checkout
                 </span>
@@ -887,6 +1207,7 @@ function Checkout() {
           </aside>
 
         </form>
+
       </div>
     </main>
   );
