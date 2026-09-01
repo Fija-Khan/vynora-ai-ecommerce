@@ -12,6 +12,7 @@ import Register from "./pages/Register";
 import Orders from "./pages/Orders";
 import Payments from "./pages/Payments";
 import OrderDetails from "./pages/OrderDetails";
+import Wishlist from "./pages/Wishlist";
 
 
 function App() {
@@ -33,7 +34,7 @@ function App() {
          <Route path="/register" element={<Register />} />
          <Route path="/payments" element={<Payments />} />
          <Route path="/orders/:id" element={<OrderDetails />} />
-        <Route path="/wishlist" element={<h1>Wishlist</h1>} />
+         <Route path="/wishlist" element={<Wishlist />} />
         <Route path="/login" element={<h1>Login</h1>} />
         <Route path="/register" element={<h1>Register</h1>} />
       </Routes>

@@ -1,12 +1,13 @@
 import { Link, useNavigate } from "react-router-dom";
+
 import "./order-success.css";
 
 function OrderSuccess() {
   const navigate = useNavigate();
 
-  const order = JSON.parse(
-    localStorage.getItem("vynora_last_order")
-  );
+  const savedOrder = localStorage.getItem("vynora_last_order");
+
+  const order = savedOrder ? JSON.parse(savedOrder) : null;
 
   if (!order) {
     return (
@@ -52,17 +53,20 @@ function OrderSuccess() {
           We’ll process it and get it ready for delivery.
         </p>
 
+        {/* ORDER ID */}
         <div className="order-number">
           <span>Order ID</span>
-          <strong>{order.id}</strong>
+          <strong>#{order.id}</strong>
         </div>
 
+        {/* ORDER DETAILS */}
         <div className="success-details">
 
           <div>
             <span>Items</span>
+
             <strong>
-              {order.items.reduce(
+              {order.items?.reduce(
                 (total, item) =>
                   total + Number(item.quantity || 1),
                 0
@@ -72,8 +76,9 @@ function OrderSuccess() {
 
           <div>
             <span>Payment</span>
+
             <strong>
-              {order.paymentMethod === "cod"
+              {order.payment_method === "cod"
                 ? "Cash on Delivery"
                 : "Online Payment"}
             </strong>
@@ -81,29 +86,49 @@ function OrderSuccess() {
 
           <div>
             <span>Total Amount</span>
+
             <strong>
-              ₹{Number(order.total).toLocaleString("en-IN")}
+              ₹
+              {Number(
+                order.total_amount || 0
+              ).toLocaleString("en-IN")}
             </strong>
           </div>
 
         </div>
 
+        {/* DELIVERY ADDRESS */}
         <div className="success-address">
-          <h3>Delivery Address</h3>
+
+          <h3>
+            Delivery Address
+          </h3>
 
           <p>
-            <strong>{order.address.fullName}</strong>
+
+            <strong>
+              {order.full_name}
+            </strong>
+
             <br />
-            {order.address.address}
+
+            {order.shipping_address}
+
             <br />
-            {order.address.city},{" "}
-            {order.address.state} -{" "}
-            {order.address.pincode}
+
+            {order.city},{" "}
+            {order.state} -{" "}
+            {order.pincode}
+
             <br />
-            Mobile: {order.address.mobile}
+
+            Mobile: {order.mobile}
+
           </p>
+
         </div>
 
+        {/* ACTIONS */}
         <div className="success-actions">
 
           <button
@@ -112,6 +137,7 @@ function OrderSuccess() {
             onClick={() => navigate("/products")}
           >
             Continue Shopping
+
             <span>→</span>
           </button>
 

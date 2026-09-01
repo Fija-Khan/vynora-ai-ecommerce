@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import axios from "axios";
 
 const ProductCard = ({ product }) => {
   // Product price
@@ -14,15 +15,131 @@ const ProductCard = ({ product }) => {
       ? Math.round(price / (1 - discount / 100))
       : price;
 
+  // =================================
+  // WISHLIST STATE
+  // =================================
+
+  const [isWishlisted, setIsWishlisted] = useState(false);
+  const [wishlistItemId, setWishlistItemId] = useState(null);
+  const [wishlistLoading, setWishlistLoading] = useState(false);
+
+  // =================================
+  // CHECK WISHLIST
+  // =================================
+
+  useEffect(() => {
+    const checkWishlist = async () => {
+      try {
+        const token = localStorage.getItem("vynora_access_token");
+
+        if (!token) return;
+
+        const response = await axios.get(
+          "http://127.0.0.1:8000/api/wishlist/",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        const wishlistItems = response.data?.items || [];
+
+        const existingItem = wishlistItems.find(
+          (item) => Number(item.product) === Number(product.id)
+        );
+
+        if (existingItem) {
+          setIsWishlisted(true);
+          setWishlistItemId(existingItem.id);
+        }
+      } catch (error) {
+        console.error(
+          "Wishlist check error:",
+          error.response?.data || error.message
+        );
+      }
+    };
+
+    checkWishlist();
+  }, [product.id]);
+
+  // =================================
+  // ADD / REMOVE WISHLIST
+  // =================================
+
+  const handleWishlist = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    try {
+      const token = localStorage.getItem("vynora_access_token");
+
+      if (!token) {
+        console.log("Please login to use wishlist");
+        return;
+      }
+
+      setWishlistLoading(true);
+
+      // =================================
+      // REMOVE FROM WISHLIST
+      // =================================
+
+      if (isWishlisted && wishlistItemId) {
+        await axios.delete(
+          `http://127.0.0.1:8000/api/wishlist/items/${wishlistItemId}/`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        setIsWishlisted(false);
+        setWishlistItemId(null);
+
+        console.log("Removed from wishlist");
+        return;
+      }
+
+      // =================================
+      // ADD TO WISHLIST
+      // =================================
+
+      const response = await axios.post(
+        "http://127.0.0.1:8000/api/wishlist/items/",
+        {
+          product: product.id,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      setIsWishlisted(true);
+      setWishlistItemId(response.data.id);
+
+      console.log("Added to wishlist:", response.data);
+    } catch (error) {
+      console.error(
+        "Wishlist error:",
+        error.response?.data || error.message
+      );
+    } finally {
+      setWishlistLoading(false);
+    }
+  };
+
   return (
     <div className="product-card">
-
       {/* =================================
           PRODUCT IMAGE
           ================================= */}
 
       <div className="product-image-wrapper">
-
         <img
           src={
             product.image ||
@@ -44,22 +161,19 @@ const ProductCard = ({ product }) => {
 
         <button
           type="button"
-          className="wishlist-btn"
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-
-            // Wishlist functionality will be added later
-            console.log(
-              "Wishlist clicked:",
-              product.id
-            );
-          }}
-          aria-label="Add to wishlist"
+          className={`wishlist-btn ${
+            isWishlisted ? "wishlisted" : ""
+          }`}
+          onClick={handleWishlist}
+          disabled={wishlistLoading}
+          aria-label={
+            isWishlisted
+              ? "Remove from wishlist"
+              : "Add to wishlist"
+          }
         >
-          ♡
+          {isWishlisted ? "♥" : "♡"}
         </button>
-
       </div>
 
       {/* =================================
@@ -67,7 +181,6 @@ const ProductCard = ({ product }) => {
           ================================= */}
 
       <div className="product-info">
-
         {/* BRAND */}
 
         <span className="product-brand">
@@ -91,7 +204,6 @@ const ProductCard = ({ product }) => {
             ================================= */}
 
         <div className="product-price">
-
           {/* SELLING PRICE */}
 
           <span className="selling-price">
@@ -113,7 +225,6 @@ const ProductCard = ({ product }) => {
               {discount}% OFF
             </span>
           )}
-
         </div>
 
         {/* =================================
@@ -142,7 +253,6 @@ const ProductCard = ({ product }) => {
         >
           View Details
         </Link>
-
       </div>
     </div>
   );

@@ -6,29 +6,38 @@ from .models import Wishlist, WishlistItem
 class WishlistItemSerializer(serializers.ModelSerializer):
 
     product_name = serializers.CharField(
-        source='product.name',
+        source="product.name",
         read_only=True
     )
 
     product_price = serializers.DecimalField(
-        source='product.price',
+        source="product.price",
         max_digits=10,
         decimal_places=2,
         read_only=True
     )
 
+    # Product Image
+    product_image = serializers.ImageField(
+        source="product.image",
+        read_only=True
+    )
+
     class Meta:
         model = WishlistItem
+
         fields = [
-            'id',
-            'product',
-            'product_name',
-            'product_price',
-            'created_at',
+            "id",
+            "product",
+            "product_name",
+            "product_price",
+            "product_image",
+            "created_at",
         ]
 
         read_only_fields = [
-            'created_at',
+            "created_at",
+            "product_image",
         ]
 
 
@@ -41,17 +50,18 @@ class WishlistSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Wishlist
+
         fields = [
-            'id',
-            'user',
-            'items',
-            'created_at',
-            'updated_at',
+            "id",
+            "user",
+            "items",
+            "created_at",
+            "updated_at",
         ]
 
         read_only_fields = [
-            'user',
-            'items',
-            'created_at',
-            'updated_at',
+            "user",
+            "items",
+            "created_at",
+            "updated_at",
         ]
