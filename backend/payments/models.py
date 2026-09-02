@@ -40,6 +40,13 @@ class Payment(models.Model):
         choices=PAYMENT_METHOD_CHOICES
     )
 
+    razorpay_order_id = models.CharField(
+        max_length=255,
+        unique=True,
+        blank=True,
+        null=True
+    )
+
     transaction_id = models.CharField(
         max_length=255,
         unique=True,

@@ -1,14 +1,79 @@
 import React, { useEffect, useState } from "react";
-
 import { Link } from "react-router-dom";
-
 import axios from "axios";
-
 import "./wishlist.css";
+
+const API_URL = "http://127.0.0.1:8000";
+
+// ========================================
+// JWT AUTHENTICATED REQUEST
+// ========================================
+
+const authenticatedRequest = async (config) => {
+  let accessToken = localStorage.getItem("vynora_access_token");
+  const refreshToken = localStorage.getItem("vynora_refresh_token");
+
+  if (!accessToken) {
+    throw new Error("No access token");
+  }
+
+  try {
+    return await axios({
+      ...config,
+      headers: {
+        ...(config.headers || {}),
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+  } catch (error) {
+    // Refresh only if access token expired
+    if (error.response?.status !== 401 || !refreshToken) {
+      throw error;
+    }
+
+    try {
+      const refreshResponse = await axios.post(
+        `${API_URL}/api/accounts/token/refresh/`,
+        {
+          refresh: refreshToken,
+        }
+      );
+
+      const newAccessToken = refreshResponse.data.access;
+
+      localStorage.setItem(
+        "vynora_access_token",
+        newAccessToken
+      );
+
+      // Retry original request
+      return await axios({
+        ...config,
+        headers: {
+          ...(config.headers || {}),
+          Authorization: `Bearer ${newAccessToken}`,
+        },
+      });
+    } catch (refreshError) {
+      console.error(
+        "Token refresh failed:",
+        refreshError.response?.data || refreshError.message
+      );
+
+      localStorage.removeItem("vynora_access_token");
+      localStorage.removeItem("vynora_refresh_token");
+      localStorage.removeItem("vynora_logged_in");
+      localStorage.removeItem("vynora_user");
+
+      throw refreshError;
+    }
+  }
+};
 
 function Wishlist() {
   const [wishlist, setWishlist] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [cartLoading, setCartLoading] = useState(null);
 
   // ========================================
   // LOAD WISHLIST FROM DATABASE
@@ -20,7 +85,9 @@ function Wishlist() {
 
   const fetchWishlist = async () => {
     try {
-      const token = localStorage.getItem("vynora_access_token");
+      const token = localStorage.getItem(
+        "vynora_access_token"
+      );
 
       if (!token) {
         console.log("User is not logged in");
@@ -28,14 +95,10 @@ function Wishlist() {
         return;
       }
 
-      const response = await axios.get(
-        "http://127.0.0.1:8000/api/wishlist/",
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await authenticatedRequest({
+        method: "GET",
+        url: `${API_URL}/api/wishlist/`,
+      });
 
       console.log("Wishlist loaded:", response.data);
 
@@ -56,16 +119,10 @@ function Wishlist() {
 
   const removeFromWishlist = async (itemId) => {
     try {
-      const token = localStorage.getItem("vynora_access_token");
-
-      await axios.delete(
-        `http://127.0.0.1:8000/api/wishlist/items/${itemId}/`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      await authenticatedRequest({
+        method: "DELETE",
+        url: `${API_URL}/api/wishlist/items/${itemId}/`,
+      });
 
       setWishlist((prev) =>
         prev.filter((item) => item.id !== itemId)
@@ -81,6 +138,50 @@ function Wishlist() {
   };
 
   // ========================================
+  // ADD TO CART
+  // ========================================
+
+  const addToCart = async (productId) => {
+    try {
+      const token = localStorage.getItem(
+        "vynora_access_token"
+      );
+
+      if (!token) {
+        console.log("Please login to add products to cart");
+        return;
+      }
+
+      setCartLoading(productId);
+
+      const response = await authenticatedRequest({
+        method: "POST",
+        url: `${API_URL}/api/cart/items/`,
+        data: {
+          product: productId,
+          quantity: 1,
+        },
+      });
+
+      console.log("Added to cart:", response.data);
+
+      alert("Product added to cart!");
+    } catch (error) {
+      console.error(
+        "Add to cart error:",
+        error.response?.data || error.message
+      );
+
+      alert(
+        error.response?.data?.detail ||
+          "Unable to add product to cart."
+      );
+    } finally {
+      setCartLoading(null);
+    }
+  };
+
+  // ========================================
   // LOADING
   // ========================================
 
@@ -88,7 +189,6 @@ function Wishlist() {
     return (
       <main className="wishlist-page">
         <div className="wishlist-container">
-
           <div className="wishlist-header">
             <div>
               <span className="wishlist-eyebrow">
@@ -106,7 +206,6 @@ function Wishlist() {
           <section className="wishlist-empty">
             <h2>Loading Wishlist...</h2>
           </section>
-
         </div>
       </main>
     );
@@ -120,9 +219,7 @@ function Wishlist() {
     return (
       <main className="wishlist-page">
         <div className="wishlist-container">
-
           <div className="wishlist-header">
-
             <div>
               <span className="wishlist-eyebrow">
                 VYNORA COLLECTION
@@ -143,11 +240,9 @@ function Wishlist() {
               Continue Shopping
               <span>→</span>
             </Link>
-
           </div>
 
           <section className="wishlist-empty">
-
             <div className="wishlist-empty-icon">
               <span>♡</span>
             </div>
@@ -171,9 +266,7 @@ function Wishlist() {
               Explore Products
               <span>→</span>
             </Link>
-
           </section>
-
         </div>
       </main>
     );
@@ -190,7 +283,6 @@ function Wishlist() {
         {/* PAGE HEADER */}
 
         <div className="wishlist-header">
-
           <div>
             <span className="wishlist-eyebrow">
               VYNORA COLLECTION
@@ -204,7 +296,6 @@ function Wishlist() {
           </div>
 
           <div className="wishlist-header-right">
-
             <div className="wishlist-count-box">
               <strong>{wishlist.length}</strong>
 
@@ -222,17 +313,13 @@ function Wishlist() {
               Continue Shopping
               <span>→</span>
             </Link>
-
           </div>
-
         </div>
 
         {/* WISHLIST LIST */}
 
         <div className="wishlist-grid">
-
           {wishlist.map((item) => {
-
             const productId = item.product;
 
             const productName =
@@ -254,7 +341,6 @@ function Wishlist() {
                 {/* PRODUCT IMAGE */}
 
                 <div className="wishlist-image">
-
                   {productImage ? (
                     <img
                       src={productImage}
@@ -274,7 +360,6 @@ function Wishlist() {
                   >
                     ×
                   </button>
-
                 </div>
 
                 {/* PRODUCT DETAILS */}
@@ -295,6 +380,8 @@ function Wishlist() {
                     })}
                   </div>
 
+                  {/* ACTIONS */}
+
                   <div className="wishlist-actions">
 
                     <Link
@@ -307,31 +394,34 @@ function Wishlist() {
                     <button
                       type="button"
                       className="wishlist-cart-btn"
+                      onClick={() =>
+                        addToCart(productId)
+                      }
+                      disabled={
+                        cartLoading === productId
+                      }
                     >
-                      Add to Cart
+                      {cartLoading === productId
+                        ? "Adding..."
+                        : "Add to Cart"}
                     </button>
 
                   </div>
-
                 </div>
-
               </article>
             );
           })}
-
         </div>
 
         {/* BOTTOM */}
 
         <div className="wishlist-bottom">
-
           <Link
             to="/products"
             className="wishlist-shopping-link"
           >
             ← Continue Shopping
           </Link>
-
         </div>
 
       </div>

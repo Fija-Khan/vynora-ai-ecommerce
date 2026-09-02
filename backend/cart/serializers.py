@@ -17,6 +17,21 @@ class CartItemSerializer(serializers.ModelSerializer):
         read_only=True
     )
 
+    product_image = serializers.ImageField(
+        source='product.image',
+        read_only=True
+    )
+
+    product_brand = serializers.CharField(
+        source='product.brand',
+        read_only=True
+    )
+
+    product_discount_percent = serializers.IntegerField(
+        source='product.discount_percent',
+        read_only=True
+    )
+
     class Meta:
         model = CartItem
         fields = [
@@ -24,6 +39,9 @@ class CartItemSerializer(serializers.ModelSerializer):
             'product',
             'product_name',
             'product_price',
+            'product_image',
+            'product_brand',
+            'product_discount_percent',
             'quantity',
         ]
 

@@ -2,6 +2,86 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 
+const API_URL = "http://127.0.0.1:8000";
+
+// =================================
+// JWT AUTHENTICATED REQUEST
+// =================================
+
+const authenticatedRequest = async (config) => {
+  let accessToken = localStorage.getItem("vynora_access_token");
+  const refreshToken = localStorage.getItem("vynora_refresh_token");
+
+  if (!accessToken) {
+    throw new Error("No access token");
+  }
+
+  try {
+    // First request with current access token
+    return await axios({
+      ...config,
+      headers: {
+        ...(config.headers || {}),
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
+  } catch (error) {
+    // Only refresh when access token is expired/invalid
+    if (error.response?.status !== 401 || !refreshToken) {
+      throw error;
+    }
+
+    try {
+      // =================================
+      // GET NEW ACCESS TOKEN
+      // =================================
+
+      const refreshResponse = await axios.post(
+        `${API_URL}/api/accounts/token/refresh/`,
+        {
+          refresh: refreshToken,
+        }
+      );
+
+      const newAccessToken = refreshResponse.data.access;
+
+      // Save new access token
+      localStorage.setItem(
+        "vynora_access_token",
+        newAccessToken
+      );
+
+      // =================================
+      // RETRY ORIGINAL REQUEST
+      // =================================
+
+      return await axios({
+        ...config,
+        headers: {
+          ...(config.headers || {}),
+          Authorization: `Bearer ${newAccessToken}`,
+        },
+      });
+    } catch (refreshError) {
+      console.error(
+        "Token refresh failed:",
+        refreshError.response?.data || refreshError.message
+      );
+
+      // =================================
+      // CLEAR INVALID LOGIN
+      // =================================
+
+      localStorage.removeItem("vynora_access_token");
+      localStorage.removeItem("vynora_refresh_token");
+      localStorage.removeItem("vynora_logged_in");
+      localStorage.removeItem("vynora_user");
+
+      throw refreshError;
+    }
+  }
+};
+
 const ProductCard = ({ product }) => {
   // Product price
   const price = Number(product.price || 0);
@@ -30,28 +110,31 @@ const ProductCard = ({ product }) => {
   useEffect(() => {
     const checkWishlist = async () => {
       try {
-        const token = localStorage.getItem("vynora_access_token");
+        const token = localStorage.getItem(
+          "vynora_access_token"
+        );
 
         if (!token) return;
 
-        const response = await axios.get(
-          "http://127.0.0.1:8000/api/wishlist/",
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const response = await authenticatedRequest({
+          method: "GET",
+          url: `${API_URL}/api/wishlist/`,
+        });
 
-        const wishlistItems = response.data?.items || [];
+        const wishlistItems =
+          response.data?.items || [];
 
         const existingItem = wishlistItems.find(
-          (item) => Number(item.product) === Number(product.id)
+          (item) =>
+            Number(item.product) === Number(product.id)
         );
 
         if (existingItem) {
           setIsWishlisted(true);
           setWishlistItemId(existingItem.id);
+        } else {
+          setIsWishlisted(false);
+          setWishlistItemId(null);
         }
       } catch (error) {
         console.error(
@@ -73,7 +156,9 @@ const ProductCard = ({ product }) => {
     e.stopPropagation();
 
     try {
-      const token = localStorage.getItem("vynora_access_token");
+      const token = localStorage.getItem(
+        "vynora_access_token"
+      );
 
       if (!token) {
         console.log("Please login to use wishlist");
@@ -87,19 +172,16 @@ const ProductCard = ({ product }) => {
       // =================================
 
       if (isWishlisted && wishlistItemId) {
-        await axios.delete(
-          `http://127.0.0.1:8000/api/wishlist/items/${wishlistItemId}/`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        await authenticatedRequest({
+          method: "DELETE",
+          url: `${API_URL}/api/wishlist/items/${wishlistItemId}/`,
+        });
 
         setIsWishlisted(false);
         setWishlistItemId(null);
 
         console.log("Removed from wishlist");
+
         return;
       }
 
@@ -107,22 +189,21 @@ const ProductCard = ({ product }) => {
       // ADD TO WISHLIST
       // =================================
 
-      const response = await axios.post(
-        "http://127.0.0.1:8000/api/wishlist/items/",
-        {
+      const response = await authenticatedRequest({
+        method: "POST",
+        url: `${API_URL}/api/wishlist/items/`,
+        data: {
           product: product.id,
         },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      });
 
       setIsWishlisted(true);
       setWishlistItemId(response.data.id);
 
-      console.log("Added to wishlist:", response.data);
+      console.log(
+        "Added to wishlist:",
+        response.data
+      );
     } catch (error) {
       console.error(
         "Wishlist error:",
