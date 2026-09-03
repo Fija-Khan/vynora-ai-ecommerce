@@ -3,6 +3,7 @@ from django.urls import path
 from .views import (
     UserProductInteractionListCreateView,
     UserProductInteractionDetailView,
+    ProductRecommendationView,
 )
 
 
@@ -17,5 +18,11 @@ urlpatterns = [
         '<int:pk>/',
         UserProductInteractionDetailView.as_view(),
         name='interaction-detail',
+    ),
+
+    path(
+        'products/',
+        ProductRecommendationView.as_view(),
+        name='product-recommendations',
     ),
 ]

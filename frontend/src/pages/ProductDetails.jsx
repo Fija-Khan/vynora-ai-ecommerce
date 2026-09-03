@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
+
 import { Link, useNavigate, useParams } from "react-router-dom";
+
 import axios from "axios";
+
 import "./productDetails.css";
 
 function ProductDetails() {
@@ -9,16 +12,31 @@ function ProductDetails() {
 
   const [product, setProduct] = useState(null);
   const [relatedProducts, setRelatedProducts] = useState([]);
+
   const [quantity, setQuantity] = useState(1);
   const [selectedColor, setSelectedColor] = useState("");
   const [selectedSize, setSelectedSize] = useState("");
+
   const [loading, setLoading] = useState(true);
   const [relatedLoading, setRelatedLoading] = useState(true);
+
   const [error, setError] = useState("");
+
+  // =========================================
+  // REVIEW STATES
+  // =========================================
+
+  const [reviews, setReviews] = useState([]);
+  const [reviewLoading, setReviewLoading] = useState(true);
+  const [reviewRating, setReviewRating] = useState(5);
+  const [reviewComment, setReviewComment] = useState("");
+  const [reviewSubmitting, setReviewSubmitting] = useState(false);
+  const [reviewError, setReviewError] = useState("");
 
   // =========================================
   // FETCH PRODUCT
   // =========================================
+
   useEffect(() => {
     const fetchProduct = async () => {
       try {
@@ -44,6 +62,7 @@ function ProductDetails() {
   // =========================================
   // FETCH RELATED PRODUCTS
   // =========================================
+
   useEffect(() => {
     const fetchRelatedProducts = async () => {
       try {
@@ -79,18 +98,51 @@ function ProductDetails() {
   }, [product, id]);
 
   // =========================================
+  // FETCH REVIEWS
+  // =========================================
+
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        setReviewLoading(true);
+
+        const response = await axios.get(
+          `http://127.0.0.1:8000/api/reviews/?product=${id}`
+        );
+
+        const reviewList =
+          response.data.results || response.data;
+
+        setReviews(reviewList);
+      } catch (error) {
+        console.error(
+          "Failed to fetch reviews:",
+          error
+        );
+      } finally {
+        setReviewLoading(false);
+      }
+    };
+
+    fetchReviews();
+  }, [id]);
+
+  // =========================================
   // COLORS
   // =========================================
+
   const colors = product?.available_colors || [];
 
   // =========================================
   // SIZES
   // =========================================
+
   const sizes = product?.available_sizes || [];
 
   // =========================================
   // INCREASE QUANTITY
   // =========================================
+
   const increaseQuantity = () => {
     if (quantity < Number(product.stock)) {
       setQuantity((prev) => prev + 1);
@@ -100,6 +152,7 @@ function ProductDetails() {
   // =========================================
   // DECREASE QUANTITY
   // =========================================
+
   const decreaseQuantity = () => {
     if (quantity > 1) {
       setQuantity((prev) => prev - 1);
@@ -109,31 +162,31 @@ function ProductDetails() {
   // =========================================
   // ADD TO CART
   // =========================================
+
   const handleAddToCart = () => {
     // -----------------------------------------
     // CHECK LOGIN
     // -----------------------------------------
+
     const accessToken = localStorage.getItem(
       "vynora_access_token"
     );
 
     // User is NOT logged in
     if (!accessToken) {
-      // Save current product page
       localStorage.setItem(
         "vynora_redirect_after_login",
         `/products/${id}`
       );
 
-      // Go to login
       navigate("/login");
-
       return;
     }
 
     // -----------------------------------------
     // PRODUCT CHECK
     // -----------------------------------------
+
     if (!product) {
       return;
     }
@@ -147,6 +200,7 @@ function ProductDetails() {
     // -----------------------------------------
     // PREPARE CART ITEM
     // -----------------------------------------
+
     const cartItem = {
       id: product.id,
 
@@ -184,6 +238,7 @@ function ProductDetails() {
     // -----------------------------------------
     // GET EXISTING CART
     // -----------------------------------------
+
     let existingCart = [];
 
     try {
@@ -203,6 +258,7 @@ function ProductDetails() {
     // -----------------------------------------
     // CHECK SAME PRODUCT + COLOR + SIZE
     // -----------------------------------------
+
     const existingItemIndex =
       existingCart.findIndex(
         (item) =>
@@ -216,6 +272,7 @@ function ProductDetails() {
     // -----------------------------------------
     // ALREADY EXISTS
     // -----------------------------------------
+
     if (existingItemIndex !== -1) {
       const existingItem =
         existingCart[existingItemIndex];
@@ -236,6 +293,7 @@ function ProductDetails() {
     // -----------------------------------------
     // NEW PRODUCT
     // -----------------------------------------
+
     else {
       existingCart.push(cartItem);
     }
@@ -243,6 +301,7 @@ function ProductDetails() {
     // -----------------------------------------
     // SAVE CART
     // -----------------------------------------
+
     localStorage.setItem(
       "vynora_cart",
       JSON.stringify(existingCart)
@@ -251,12 +310,123 @@ function ProductDetails() {
     // -----------------------------------------
     // GO TO CART
     // -----------------------------------------
+
     navigate("/cart");
   };
 
   // =========================================
+  // SUBMIT REVIEW
+  // =========================================
+
+  const handleSubmitReview = async (event) => {
+    event.preventDefault();
+
+    const accessToken = localStorage.getItem(
+      "vynora_access_token"
+    );
+
+    // -----------------------------------------
+    // CHECK LOGIN
+    // -----------------------------------------
+
+    if (!accessToken) {
+      localStorage.setItem(
+        "vynora_redirect_after_login",
+        `/products/${id}`
+      );
+
+      navigate("/login");
+      return;
+    }
+
+    // -----------------------------------------
+    // VALIDATE COMMENT
+    // -----------------------------------------
+
+    if (!reviewComment.trim()) {
+      setReviewError(
+        "Please write a comment before submitting."
+      );
+
+      return;
+    }
+
+    try {
+      setReviewSubmitting(true);
+      setReviewError("");
+
+      const response = await axios.post(
+        "http://127.0.0.1:8000/api/reviews/",
+        {
+          product: Number(id),
+          rating: Number(reviewRating),
+          comment: reviewComment.trim(),
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+        }
+      );
+
+      // Add newly created review at top
+      setReviews((prevReviews) => [
+        response.data,
+        ...prevReviews,
+      ]);
+
+      // Reset form
+      setReviewRating(5);
+      setReviewComment("");
+    } catch (error) {
+      console.error(
+        "Failed to submit review:",
+        error
+      );
+
+      if (error.response?.data) {
+        const data = error.response.data;
+
+        if (data.non_field_errors) {
+          setReviewError(
+            data.non_field_errors[0]
+          );
+        } else if (data.detail) {
+          setReviewError(data.detail);
+        } else {
+          setReviewError(
+            "Unable to submit review."
+          );
+        }
+      } else {
+        setReviewError(
+          "Unable to submit review."
+        );
+      }
+    } finally {
+      setReviewSubmitting(false);
+    }
+  };
+
+  // =========================================
+  // CALCULATE AVERAGE RATING
+  // =========================================
+
+  const averageRating =
+    reviews.length > 0
+      ? (
+          reviews.reduce(
+            (total, review) =>
+              total + Number(review.rating || 0),
+            0
+          ) / reviews.length
+        ).toFixed(1)
+      : "0.0";
+
+  // =========================================
   // LOADING
   // =========================================
+
   if (loading) {
     return (
       <main className="product-details-page">
@@ -270,6 +440,7 @@ function ProductDetails() {
   // =========================================
   // ERROR
   // =========================================
+
   if (error || !product) {
     return (
       <main className="product-details-page">
@@ -290,6 +461,7 @@ function ProductDetails() {
   // =========================================
   // PRODUCT VALUES
   // =========================================
+
   const price = Number(
     product.selling_price ||
       product.price ||
@@ -311,11 +483,14 @@ function ProductDetails() {
   // =========================================
   // RETURN
   // =========================================
+
   return (
     <main className="product-details-page">
+
       <div className="container">
 
         {/* BACK TO PRODUCTS */}
+
         <Link
           to="/products"
           className="back-products-link"
@@ -323,13 +498,16 @@ function ProductDetails() {
           ← Back to Products
         </Link>
 
-        {/* =========================================
+        {/* =====================================
             PRODUCT DETAILS
-        ========================================= */}
+        ===================================== */}
+
         <section className="product-details-container">
 
           {/* PRODUCT IMAGE */}
+
           <div className="product-details-image">
+
             {product.image ? (
               <img
                 src={product.image}
@@ -342,32 +520,40 @@ function ProductDetails() {
             )}
 
             {/* DISCOUNT BADGE */}
+
             {discount > 0 && (
               <span className="product-details-discount">
                 {discount}% OFF
               </span>
             )}
+
           </div>
 
           {/* PRODUCT INFORMATION */}
+
           <div className="product-details-info">
 
             {/* BRAND */}
+
             <span className="product-details-brand">
               {product.brand || "VYNORA"}
             </span>
 
             {/* CATEGORY */}
+
             <span className="product-details-category">
               {product.category_name ||
                 "Collection"}
             </span>
 
             {/* PRODUCT NAME */}
+
             <h1>{product.name}</h1>
 
             {/* PRICE */}
+
             <div className="product-details-price">
+
               <span className="details-selling-price">
                 ₹{price.toLocaleString("en-IN")}
               </span>
@@ -383,29 +569,37 @@ function ProductDetails() {
                   {discount}% OFF
                 </span>
               )}
+
             </div>
 
             {/* TAX */}
+
             <p className="tax-info">
               Inclusive of all taxes
             </p>
 
             {/* DESCRIPTION */}
+
             <div className="product-details-description">
+
               <h3>Product Details</h3>
 
               <p>
                 {product.description ||
                   "No description available for this product."}
               </p>
+
             </div>
 
             {/* =====================================
                 COLOR
             ===================================== */}
+
             {colors.length > 0 && (
               <div className="variant-section">
+
                 <div className="variant-heading">
+
                   <h4>Color</h4>
 
                   {selectedColor && (
@@ -413,9 +607,11 @@ function ProductDetails() {
                       {selectedColor}
                     </span>
                   )}
+
                 </div>
 
                 <div className="variant-options">
+
                   {colors.map((color) => (
                     <button
                       type="button"
@@ -432,16 +628,21 @@ function ProductDetails() {
                       {color}
                     </button>
                   ))}
+
                 </div>
+
               </div>
             )}
 
             {/* =====================================
                 SIZE
             ===================================== */}
+
             {sizes.length > 0 && (
               <div className="variant-section">
+
                 <div className="variant-heading">
+
                   <h4>Size</h4>
 
                   {selectedSize && (
@@ -449,9 +650,11 @@ function ProductDetails() {
                       {selectedSize}
                     </span>
                   )}
+
                 </div>
 
                 <div className="variant-options">
+
                   {sizes.map((size) => (
                     <button
                       type="button"
@@ -468,13 +671,16 @@ function ProductDetails() {
                       {size}
                     </button>
                   ))}
+
                 </div>
+
               </div>
             )}
 
             {/* =====================================
                 STOCK
             ===================================== */}
+
             <div
               className={`product-details-stock ${
                 stock > 0
@@ -491,11 +697,14 @@ function ProductDetails() {
             {/* =====================================
                 QUANTITY
             ===================================== */}
+
             {stock > 0 && (
               <div className="quantity-section">
+
                 <h4>Quantity</h4>
 
                 <div className="quantity-control">
+
                   <button
                     type="button"
                     onClick={decreaseQuantity}
@@ -517,13 +726,16 @@ function ProductDetails() {
                   >
                     +
                   </button>
+
                 </div>
+
               </div>
             )}
 
             {/* =====================================
                 ACTIONS
             ===================================== */}
+
             <div className="product-details-actions">
 
               <button
@@ -546,15 +758,244 @@ function ProductDetails() {
               </button>
 
             </div>
+
           </div>
+
+        </section>
+
+        {/* =========================================
+            REVIEWS SECTION
+        ========================================= */}
+
+        <section className="reviews-section">
+
+          <div className="reviews-heading">
+
+            <span>
+              Customer Feedback
+            </span>
+
+            <h2>
+              Ratings & Reviews
+            </h2>
+
+            <p>
+              See what customers think about this product.
+            </p>
+
+          </div>
+
+          {/* REVIEW SUMMARY */}
+
+          <div className="reviews-summary">
+
+            <div className="average-rating">
+
+              <strong>
+                {averageRating}
+              </strong>
+
+              <div className="rating-stars">
+                {"★".repeat(
+                  Math.round(
+                    Number(averageRating)
+                  )
+                )}
+                {"☆".repeat(
+                  5 -
+                    Math.round(
+                      Number(averageRating)
+                    )
+                )}
+              </div>
+
+              <span>
+                {reviews.length}{" "}
+                {reviews.length === 1
+                  ? "Review"
+                  : "Reviews"}
+              </span>
+
+            </div>
+
+          </div>
+
+          {/* REVIEW FORM */}
+
+          <div className="review-form-container">
+
+            <h3>
+              Write a Review
+            </h3>
+
+            <form
+              onSubmit={handleSubmitReview}
+              className="review-form"
+            >
+
+              {/* RATING */}
+
+              <div className="review-rating-field">
+
+                <label>
+                  Your Rating
+                </label>
+
+                <div className="review-rating-buttons">
+
+                  {[1, 2, 3, 4, 5].map(
+                    (rating) => (
+                      <button
+                        key={rating}
+                        type="button"
+                        className={
+                          rating <=
+                          reviewRating
+                            ? "rating-selected"
+                            : ""
+                        }
+                        onClick={() =>
+                          setReviewRating(
+                            rating
+                          )
+                        }
+                      >
+                        ★
+                      </button>
+                    )
+                  )}
+
+                </div>
+
+              </div>
+
+              {/* COMMENT */}
+
+              <div className="review-comment-field">
+
+                <label htmlFor="review-comment">
+                  Your Comment
+                </label>
+
+                <textarea
+                  id="review-comment"
+                  value={reviewComment}
+                  onChange={(event) =>
+                    setReviewComment(
+                      event.target.value
+                    )
+                  }
+                  placeholder="Share your experience with this product..."
+                  rows="5"
+                />
+
+              </div>
+
+              {/* ERROR */}
+
+              {reviewError && (
+                <p className="review-error">
+                  {reviewError}
+                </p>
+              )}
+
+              {/* SUBMIT */}
+
+              <button
+                type="submit"
+                className="submit-review-btn"
+                disabled={reviewSubmitting}
+              >
+                {reviewSubmitting
+                  ? "Submitting..."
+                  : "Submit Review"}
+              </button>
+
+            </form>
+
+          </div>
+
+          {/* EXISTING REVIEWS */}
+
+          <div className="reviews-list">
+
+            <h3>
+              Customer Reviews
+            </h3>
+
+            {reviewLoading ? (
+              <p className="review-message">
+                Loading reviews...
+              </p>
+            ) : reviews.length > 0 ? (
+              reviews.map((review) => (
+                <article
+                  className="review-card"
+                  key={review.id}
+                >
+
+                  <div className="review-card-header">
+
+                    <div>
+                      <strong>
+                        {review.user_name ||
+                          "Customer"}
+                      </strong>
+
+                      <div className="review-stars">
+                        {"★".repeat(
+                          Number(
+                            review.rating
+                          )
+                        )}
+
+                        {"☆".repeat(
+                          5 -
+                            Number(
+                              review.rating
+                            )
+                        )}
+                      </div>
+                    </div>
+
+                    {review.created_at && (
+                      <time>
+                        {new Date(
+                          review.created_at
+                        ).toLocaleDateString(
+                          "en-IN"
+                        )}
+                      </time>
+                    )}
+
+                  </div>
+
+                  {review.comment && (
+                    <p className="review-comment">
+                      {review.comment}
+                    </p>
+                  )}
+
+                </article>
+              ))
+            ) : (
+              <p className="review-message">
+                No reviews yet. Be the first to review this product!
+              </p>
+            )}
+
+          </div>
+
         </section>
 
         {/* =========================================
             RELATED PRODUCTS
         ========================================= */}
+
         <section className="related-products-section">
 
           <div className="related-products-heading">
+
             <span>
               Discover More
             </span>
@@ -566,9 +1007,11 @@ function ProductDetails() {
             <p>
               You may also like these products.
             </p>
+
           </div>
 
           {/* RELATED LOADING */}
+
           {relatedLoading ? (
             <p className="related-message">
               Loading related products...
@@ -594,11 +1037,14 @@ function ProductDetails() {
                     >
 
                       {/* IMAGE */}
+
                       <div className="related-product-image">
 
                         {relatedProduct.image ? (
                           <img
-                            src={relatedProduct.image}
+                            src={
+                              relatedProduct.image
+                            }
                             alt={
                               relatedProduct.name
                             }
@@ -612,6 +1058,7 @@ function ProductDetails() {
                       </div>
 
                       {/* CONTENT */}
+
                       <div className="related-product-content">
 
                         <span>
@@ -642,6 +1089,7 @@ function ProductDetails() {
                         </Link>
 
                       </div>
+
                     </div>
                   );
                 })}
@@ -654,7 +1102,9 @@ function ProductDetails() {
           )}
 
         </section>
+
       </div>
+
     </main>
   );
 }
