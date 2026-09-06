@@ -1,6 +1,5 @@
 from django.conf import settings
 from django.db import models
-
 from products.models import Product
 
 
@@ -76,6 +75,22 @@ class Order(models.Model):
         max_length=20,
         choices=PAYMENT_STATUS_CHOICES,
         default="pending",
+    )
+
+    # Return Order fields
+    return_requested = models.BooleanField(
+        default=False
+    )
+
+    return_reason = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True
+    )
+
+    return_requested_at = models.DateTimeField(
+        blank=True,
+        null=True
     )
 
     created_at = models.DateTimeField(

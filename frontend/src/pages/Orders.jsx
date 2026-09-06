@@ -1,24 +1,155 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import axios from "axios";
+
 import "./orders.css";
 
 function Orders() {
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
   // ========================================
-  // LOAD ORDERS
+  // LOAD ORDERS FROM BACKEND
   // ========================================
 
-  let orders = [];
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        setLoading(true);
+        setError("");
 
-  try {
-    const savedOrders = localStorage.getItem("vynora_orders");
+        const accessToken = localStorage.getItem(
+          "vynora_access_token"
+        );
 
-    if (savedOrders) {
-      const parsedOrders = JSON.parse(savedOrders);
-      orders = Array.isArray(parsedOrders) ? parsedOrders : [];
-    }
-  } catch (error) {
-    console.error("Failed to load orders:", error);
-    orders = [];
-  }
+        // ----------------------------------------
+        // LOGIN CHECK
+        // ----------------------------------------
+
+        if (!accessToken) {
+          setError("Please login to view your orders.");
+          setLoading(false);
+          return;
+        }
+
+        // ----------------------------------------
+        // GET ORDERS FROM BACKEND
+        // ----------------------------------------
+
+        const response = await axios.get(
+          "http://127.0.0.1:8000/api/orders/",
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        console.log(
+          "MY ORDERS RESPONSE:",
+          response.data
+        );
+
+        // ----------------------------------------
+        // HANDLE RESPONSE
+        // ----------------------------------------
+
+        let backendOrders = [];
+
+        if (Array.isArray(response.data)) {
+          backendOrders = response.data;
+        } else if (
+          Array.isArray(response.data.results)
+        ) {
+          backendOrders = response.data.results;
+        } else if (
+          Array.isArray(response.data.orders)
+        ) {
+          backendOrders = response.data.orders;
+        }
+
+        setOrders(backendOrders);
+
+        // ----------------------------------------
+        // SYNC LOCAL STORAGE
+        // ----------------------------------------
+
+        try {
+          localStorage.setItem(
+            "vynora_orders",
+            JSON.stringify(backendOrders)
+          );
+        } catch (storageError) {
+          console.error(
+            "Failed to save orders to localStorage:",
+            storageError
+          );
+        }
+      } catch (error) {
+        console.error(
+          "Failed to fetch orders:",
+          error
+        );
+
+        // ----------------------------------------
+        // BACKEND ERROR
+        // ----------------------------------------
+
+        if (error.response) {
+          console.error(
+            "Backend status:",
+            error.response.status
+          );
+
+          console.error(
+            "Backend response:",
+            error.response.data
+          );
+
+          if (error.response.status === 401) {
+            setError(
+              "Your login session is invalid or expired. Please login again."
+            );
+            return;
+          }
+
+          if (error.response.status === 404) {
+            setError(
+              "Orders API was not found. Please check your Django URL configuration."
+            );
+            return;
+          }
+
+          setError(
+            "Unable to load your orders. Please try again."
+          );
+
+          return;
+        }
+
+        // ----------------------------------------
+        // SERVER NOT RESPONDING
+        // ----------------------------------------
+
+        if (error.request) {
+          setError(
+            "Backend server is not responding. Please start the Django server."
+          );
+          return;
+        }
+
+        setError(
+          "Something went wrong while loading your orders."
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOrders();
+  }, []);
 
   // ========================================
   // FORMAT DATE
@@ -49,14 +180,45 @@ function Orders() {
 
     return String(status)
       .replaceAll("_", " ")
-      .replace(/\b\w/g, (letter) => letter.toUpperCase());
+      .replace(/\b\w/g, (letter) =>
+        letter.toUpperCase()
+      );
   };
 
   // ========================================
-  // EMPTY ORDERS
+  // LOADING STATE
   // ========================================
 
-  if (orders.length === 0) {
+  if (loading) {
+    return (
+      <main className="orders-page">
+        <div className="orders-container">
+          <section className="orders-empty">
+            <div className="orders-empty-icon">
+              <span>▣</span>
+            </div>
+
+            <span className="orders-empty-label">
+              VYNORA ACCOUNT
+            </span>
+
+            <h2>Loading Orders...</h2>
+
+            <p>
+              Please wait while we load your order
+              history.
+            </p>
+          </section>
+        </div>
+      </main>
+    );
+  }
+
+  // ========================================
+  // ERROR STATE
+  // ========================================
+
+  if (error) {
     return (
       <main className="orders-page">
         <div className="orders-container">
@@ -82,6 +244,68 @@ function Orders() {
               <span>→</span>
             </Link>
           </div>
+
+          <section className="orders-empty">
+            <div className="orders-empty-icon">
+              <span>!</span>
+            </div>
+
+            <span className="orders-empty-label">
+              ORDER HISTORY
+            </span>
+
+            <h2>Unable to Load Orders</h2>
+
+            <p>{error}</p>
+
+            <Link
+              to="/products"
+              className="orders-shop-btn"
+            >
+              Continue Shopping
+              <span>→</span>
+            </Link>
+          </section>
+        </div>
+      </main>
+    );
+  }
+
+  // ========================================
+  // EMPTY ORDERS
+  // ========================================
+
+  if (orders.length === 0) {
+    return (
+      <main className="orders-page">
+        <div className="orders-container">
+
+          {/* PAGE HEADER */}
+
+          <div className="orders-header">
+            <div>
+              <span className="orders-eyebrow">
+                VYNORA ACCOUNT
+              </span>
+
+              <h1>My Orders</h1>
+
+              <p>
+                Track and manage your Vynora orders
+                in one place.
+              </p>
+            </div>
+
+            <Link
+              to="/products"
+              className="orders-header-btn"
+            >
+              Continue Shopping
+              <span>→</span>
+            </Link>
+          </div>
+
+          {/* EMPTY STATE */}
 
           <section className="orders-empty">
             <div className="orders-empty-icon">
@@ -140,6 +364,7 @@ function Orders() {
           </div>
 
           <div className="orders-header-right">
+
             <div className="orders-count-box">
               <strong>{orders.length}</strong>
 
@@ -157,6 +382,7 @@ function Orders() {
               Continue Shopping
               <span>→</span>
             </Link>
+
           </div>
         </div>
 
@@ -165,11 +391,33 @@ function Orders() {
         ======================================== */}
 
         <div className="orders-list">
+
           {orders.map((order, index) => {
+
+            // ----------------------------------------
+            // REAL BACKEND ORDER ID
+            // ----------------------------------------
+
             const orderId =
               order.id ||
-              order.order_id ||
-              `VN${1000 + index}`;
+              order.order_id;
+
+            // ----------------------------------------
+            // SAFETY CHECK
+            // ----------------------------------------
+
+            if (!orderId) {
+              console.warn(
+                "Order skipped because ID is missing:",
+                order
+              );
+
+              return null;
+            }
+
+            // ----------------------------------------
+            // ORDER DATA
+            // ----------------------------------------
 
             const total =
               order.total_amount ??
@@ -182,16 +430,19 @@ function Orders() {
             const paymentStatus =
               order.payment_status ||
               order.paymentStatus ||
+              order.payment?.status ||
               "pending";
 
             const paymentMethod =
               order.payment_method ||
               order.paymentMethod ||
+              order.payment?.payment_method ||
               "cod";
 
-            const items = Array.isArray(order.items)
-              ? order.items
-              : [];
+            const items =
+              Array.isArray(order.items)
+                ? order.items
+                : [];
 
             const totalItems = items.reduce(
               (sum, item) =>
@@ -202,7 +453,7 @@ function Orders() {
             return (
               <article
                 className="order-card"
-                key={`${orderId}-${index}`}
+                key={orderId}
               >
 
                 {/* ========================================
@@ -212,6 +463,7 @@ function Orders() {
                 <div className="order-card-top">
 
                   <div className="order-id-section">
+
                     <span className="order-label">
                       ORDER ID
                     </span>
@@ -219,9 +471,11 @@ function Orders() {
                     <h2>
                       #{orderId}
                     </h2>
+
                   </div>
 
                   <div className="order-date-section">
+
                     <span className="order-label">
                       ORDER PLACED
                     </span>
@@ -233,6 +487,7 @@ function Orders() {
                         order.date
                       )}
                     </strong>
+
                   </div>
 
                 </div>
@@ -244,9 +499,11 @@ function Orders() {
                 <div className="order-status-bar">
 
                   <div className="order-status-main">
+
                     <span className="status-dot"></span>
 
                     <div>
+
                       <span>
                         Order Status
                       </span>
@@ -258,10 +515,13 @@ function Orders() {
                       >
                         {formatStatus(status)}
                       </strong>
+
                     </div>
+
                   </div>
 
                   <div className="payment-status-main">
+
                     <span>
                       Payment
                     </span>
@@ -271,8 +531,11 @@ function Orders() {
                         paymentStatus
                       ).toLowerCase()}`}
                     >
-                      {formatStatus(paymentStatus)}
+                      {formatStatus(
+                        paymentStatus
+                      )}
                     </strong>
+
                   </div>
 
                 </div>
@@ -284,11 +547,13 @@ function Orders() {
                 <div className="order-info">
 
                   <div className="order-info-item">
+
                     <span className="order-info-label">
                       Total Amount
                     </span>
 
                     <strong className="order-total">
+
                       ₹
                       {Number(total).toLocaleString(
                         "en-IN",
@@ -297,10 +562,13 @@ function Orders() {
                           maximumFractionDigits: 2,
                         }
                       )}
+
                     </strong>
+
                   </div>
 
                   <div className="order-info-item">
+
                     <span className="order-info-label">
                       Payment Method
                     </span>
@@ -310,19 +578,25 @@ function Orders() {
                         ? "Online Payment"
                         : "Cash on Delivery"}
                     </strong>
+
                   </div>
 
                   <div className="order-info-item">
+
                     <span className="order-info-label">
                       Items
                     </span>
 
                     <strong>
+
                       {totalItems}{" "}
+
                       {totalItems === 1
                         ? "Item"
                         : "Items"}
+
                     </strong>
+
                   </div>
 
                 </div>
@@ -332,68 +606,86 @@ function Orders() {
                 ======================================== */}
 
                 {items.length > 0 && (
+
                   <div className="order-products">
 
                     <div className="order-products-heading">
+
                       <span className="order-info-label">
                         ORDER ITEMS
                       </span>
 
                       {items.length > 3 && (
+
                         <span className="more-items">
                           +{items.length - 3} more
                         </span>
+
                       )}
+
                     </div>
 
                     <div className="order-product-list">
 
                       {items
                         .slice(0, 3)
-                        .map((item, itemIndex) => (
-                          <div
-                            className="order-product"
-                            key={
-                              item.id ||
-                              `${orderId}-${itemIndex}`
-                            }
-                          >
+                        .map(
+                          (
+                            item,
+                            itemIndex
+                          ) => (
 
-                            <div className="order-product-icon">
-                              <span>▣</span>
+                            <div
+                              className="order-product"
+                              key={
+                                item.id ||
+                                `${orderId}-${itemIndex}`
+                              }
+                            >
+
+                              <div className="order-product-icon">
+                                <span>▣</span>
+                              </div>
+
+                              <div className="order-product-details">
+
+                                <strong>
+                                  {item.product_name ||
+                                    item.name ||
+                                    "Vynora Product"}
+                                </strong>
+
+                                <span>
+                                  Qty:{" "}
+                                  {item.quantity ||
+                                    1}
+                                </span>
+
+                              </div>
+
+                              {item.price != null && (
+
+                                <strong className="order-product-price">
+
+                                  ₹
+                                  {Number(
+                                    item.price
+                                  ).toLocaleString(
+                                    "en-IN"
+                                  )}
+
+                                </strong>
+
+                              )}
+
                             </div>
 
-                            <div className="order-product-details">
-
-                              <strong>
-                                {item.product_name ||
-                                  item.name ||
-                                  "Vynora Product"}
-                              </strong>
-
-                              <span>
-                                Qty:{" "}
-                                {item.quantity || 1}
-                              </span>
-
-                            </div>
-
-                            {item.price && (
-                              <strong className="order-product-price">
-                                ₹
-                                {Number(
-                                  item.price
-                                ).toLocaleString(
-                                  "en-IN"
-                                )}
-                              </strong>
-                            )}
-
-                          </div>
-                        ))}
+                          )
+                        )}
 
                     </div>
                   </div>
+
                 )}
 
                 {/* ========================================
@@ -403,11 +695,14 @@ function Orders() {
                 <div className="order-card-footer">
 
                   <div className="order-footer-note">
+
                     <span>✓</span>
 
                     <p>
-                      Thank you for shopping with Vynora.
+                      Thank you for shopping with
+                      Vynora.
                     </p>
+
                   </div>
 
                   <Link
@@ -423,6 +718,7 @@ function Orders() {
               </article>
             );
           })}
+
         </div>
 
         {/* ========================================
@@ -430,12 +726,14 @@ function Orders() {
         ======================================== */}
 
         <div className="orders-bottom">
+
           <Link
             to="/products"
             className="continue-shopping-link"
           >
             ← Continue Shopping
           </Link>
+
         </div>
 
       </div>

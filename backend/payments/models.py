@@ -7,8 +7,8 @@ from orders.models import Order
 class Payment(models.Model):
 
     PAYMENT_METHOD_CHOICES = [
-        ('razorpay', 'Razorpay'),
-        ('stripe', 'Stripe'),
+        ('cod', 'Cash on Delivery'),
+        ('online', 'Online Payment'),
     ]
 
     STATUS_CHOICES = [
@@ -38,13 +38,6 @@ class Payment(models.Model):
     payment_method = models.CharField(
         max_length=20,
         choices=PAYMENT_METHOD_CHOICES
-    )
-
-    razorpay_order_id = models.CharField(
-        max_length=255,
-        unique=True,
-        blank=True,
-        null=True
     )
 
     transaction_id = models.CharField(

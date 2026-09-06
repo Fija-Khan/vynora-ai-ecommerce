@@ -146,9 +146,7 @@ function Checkout() {
       !state ||
       !pincode
     ) {
-      setError(
-        "Please complete all delivery details."
-      );
+      setError("Please complete all delivery details.");
       return;
     }
 
@@ -198,9 +196,7 @@ function Checkout() {
         setError(
           "Please login before placing an order."
         );
-
         setLoading(false);
-
         return;
       }
 
@@ -228,7 +224,6 @@ function Checkout() {
         );
 
         setLoading(false);
-
         return;
       }
 
@@ -241,7 +236,6 @@ function Checkout() {
           item.product ||
           item.product_id ||
           item.id,
-
         quantity: Number(item.quantity || 1),
       }));
 
@@ -251,37 +245,21 @@ function Checkout() {
 
       const orderData = {
         items: orderItems,
-
         full_name: fullName,
-
         mobile: mobile,
-
         shipping_address: address,
-
         city: city,
-
         state: state,
-
         pincode: pincode,
-
         payment_method: paymentMethod,
       };
 
-      console.log(
-        "================================="
-      );
-
-      console.log(
-        "SENDING ORDER DATA:"
-      );
-
+      console.log("=================================");
+      console.log("SENDING ORDER DATA:");
       console.log(
         JSON.stringify(orderData, null, 2)
       );
-
-      console.log(
-        "================================="
-      );
+      console.log("=================================");
 
       // =========================================
       // API CONFIG
@@ -295,37 +273,51 @@ function Checkout() {
       };
 
       // =========================================
-      // CREATE ORDER
+      // STEP 1: CREATE ORDER
       // =========================================
 
-      const response = await axios.post(
+      const orderResponse = await axios.post(
         "http://127.0.0.1:8000/api/orders/",
         orderData,
         config
       );
 
-      console.log(
-        "================================="
-      );
+      const createdOrder = orderResponse.data;
 
-      console.log(
-        "ORDER CREATED SUCCESSFULLY"
-      );
-
-      console.log(
-        "Backend response:",
-        response.data
-      );
-
-      console.log(
-        "================================="
-      );
+      console.log("=================================");
+      console.log("ORDER CREATED SUCCESSFULLY");
+      console.log("Order:", createdOrder);
+      console.log("=================================");
 
       // =========================================
-      // GET CREATED ORDER
+      // STEP 2: CREATE PAYMENT
       // =========================================
 
-      const createdOrder = response.data;
+      const paymentResponse = await axios.post(
+        "http://127.0.0.1:8000/api/payments/create/",
+        {
+          order_id: createdOrder.id,
+          payment_method: paymentMethod,
+        },
+        config
+      );
+
+      const createdPayment =
+        paymentResponse.data?.payment;
+
+      console.log("=================================");
+      console.log("PAYMENT CREATED SUCCESSFULLY");
+      console.log("Payment:", createdPayment);
+      console.log("=================================");
+
+      // =========================================
+      // STEP 3: COMBINE ORDER + PAYMENT
+      // =========================================
+
+      const finalOrder = {
+        ...createdOrder,
+        payment: createdPayment || null,
+      };
 
       // =========================================
       // SAVE LAST ORDER
@@ -333,14 +325,12 @@ function Checkout() {
 
       localStorage.setItem(
         "vynora_last_order",
-        JSON.stringify(createdOrder)
+        JSON.stringify(finalOrder)
       );
 
       console.log(
         "Last order saved:",
-        localStorage.getItem(
-          "vynora_last_order"
-        )
+        finalOrder
       );
 
       // =========================================
@@ -354,11 +344,6 @@ function Checkout() {
           localStorage.getItem(
             "vynora_orders"
           );
-
-        console.log(
-          "Existing orders before save:",
-          savedOrders
-        );
 
         if (savedOrders) {
           const parsedOrders =
@@ -382,7 +367,7 @@ function Checkout() {
       // =========================================
 
       const updatedOrders = [
-        createdOrder,
+        finalOrder,
         ...existingOrders,
       ];
 
@@ -396,21 +381,7 @@ function Checkout() {
       );
 
       console.log(
-        "================================="
-      );
-
-      console.log(
-        "ORDERS SAVED:"
-      );
-
-      console.log(
-        localStorage.getItem(
-          "vynora_orders"
-        )
-      );
-
-      console.log(
-        "================================="
+        "Orders saved successfully."
       );
 
       // =========================================
@@ -421,9 +392,7 @@ function Checkout() {
         "vynora_cart"
       );
 
-      console.log(
-        "Cart cleared."
-      );
+      console.log("Cart cleared.");
 
       // =========================================
       // SUCCESS PAGE
@@ -437,12 +406,10 @@ function Checkout() {
       );
 
       console.error(
-        "ORDER CREATION FAILED"
+        "ORDER / PAYMENT FAILED"
       );
 
-      console.error(
-        error
-      );
+      console.error(error);
 
       console.error(
         "================================="
@@ -467,13 +434,10 @@ function Checkout() {
         // 401 UNAUTHORIZED
         // =========================================
 
-        if (
-          error.response.status === 401
-        ) {
+        if (error.response.status === 401) {
           setError(
             "Your login session is invalid or expired. Please login again."
           );
-
           return;
         }
 
@@ -481,34 +445,26 @@ function Checkout() {
         // 400 VALIDATION ERROR
         // =========================================
 
-        if (
-          error.response.status === 400
-        ) {
+        if (error.response.status === 400) {
           const backendData =
             error.response.data;
 
           if (
-            typeof backendData ===
-              "object" &&
+            typeof backendData === "object" &&
             backendData !== null
           ) {
-            const messages =
-              Object.entries(
-                backendData
-              )
-                .map(
-                  ([field, message]) => {
-                    const formattedMessage =
-                      Array.isArray(message)
-                        ? message.join(
-                            ", "
-                          )
-                        : String(message);
+            const messages = Object.entries(
+              backendData
+            )
+              .map(([field, message]) => {
+                const formattedMessage =
+                  Array.isArray(message)
+                    ? message.join(", ")
+                    : String(message);
 
-                    return `${field}: ${formattedMessage}`;
-                  }
-                )
-                .join(" | ");
+                return `${field}: ${formattedMessage}`;
+              })
+              .join(" | ");
 
             setError(
               messages ||
@@ -527,13 +483,10 @@ function Checkout() {
         // 403 FORBIDDEN
         // =========================================
 
-        if (
-          error.response.status === 403
-        ) {
+        if (error.response.status === 403) {
           setError(
             "You are not allowed to place this order."
           );
-
           return;
         }
 
@@ -541,13 +494,10 @@ function Checkout() {
         // 404 NOT FOUND
         // =========================================
 
-        if (
-          error.response.status === 404
-        ) {
+        if (error.response.status === 404) {
           setError(
-            "Order API endpoint was not found. Please check your Django URL."
+            "Order or payment API endpoint was not found. Please check your Django URLs."
           );
-
           return;
         }
 
@@ -557,18 +507,16 @@ function Checkout() {
 
         const backendError =
           error.response.data?.detail ||
+          error.response.data?.error ||
           error.response.data?.message;
 
         if (backendError) {
-          setError(
-            String(backendError)
-          );
-
+          setError(String(backendError));
           return;
         }
 
         setError(
-          "Unable to place order. Please try again."
+          "Unable to complete your order. Please try again."
         );
 
         return;
@@ -582,7 +530,6 @@ function Checkout() {
         setError(
           "Backend server is not responding. Please start Django server."
         );
-
         return;
       }
 
@@ -593,6 +540,7 @@ function Checkout() {
       setError(
         "Something went wrong. Please try again."
       );
+
     } finally {
       setLoading(false);
     }
@@ -695,7 +643,6 @@ function Checkout() {
 
             <section className="checkout-card">
               <div className="checkout-card-heading">
-
                 <div className="checkout-number">
                   01
                 </div>
@@ -711,7 +658,6 @@ function Checkout() {
                     delivered.
                   </p>
                 </div>
-
               </div>
 
               <div className="checkout-form-grid">
@@ -840,9 +786,7 @@ function Checkout() {
             {/* PAYMENT */}
 
             <section className="checkout-card">
-
               <div className="checkout-card-heading">
-
                 <div className="checkout-number">
                   02
                 </div>
@@ -858,7 +802,6 @@ function Checkout() {
                     order.
                   </p>
                 </div>
-
               </div>
 
               <div className="payment-options">
@@ -877,8 +820,7 @@ function Checkout() {
                     name="payment"
                     value="cod"
                     checked={
-                      paymentMethod ===
-                      "cod"
+                      paymentMethod === "cod"
                     }
                     onChange={(e) =>
                       setPaymentMethod(
@@ -922,8 +864,7 @@ function Checkout() {
                     name="payment"
                     value="online"
                     checked={
-                      paymentMethod ===
-                      "online"
+                      paymentMethod === "online"
                     }
                     onChange={(e) =>
                       setPaymentMethod(
@@ -958,7 +899,6 @@ function Checkout() {
             {/* SECURITY */}
 
             <div className="checkout-security">
-
               <div className="security-icon">
                 ✓
               </div>
@@ -974,7 +914,6 @@ function Checkout() {
                   handled by Vynora.
                 </p>
               </div>
-
             </div>
 
           </div>
@@ -987,7 +926,6 @@ function Checkout() {
 
             <div className="summary-heading">
               <div>
-
                 <h2>
                   Order Summary
                 </h2>
@@ -998,7 +936,6 @@ function Checkout() {
                     ? "s"
                     : ""}
                 </span>
-
               </div>
             </div>
 
@@ -1007,7 +944,6 @@ function Checkout() {
             <div className="checkout-products">
 
               {cartItems.map((item) => {
-
                 const quantity = Number(
                   item.quantity || 1
                 );
@@ -1020,14 +956,11 @@ function Checkout() {
                   <div
                     className="checkout-product"
                     key={`${item.id}-${
-                      item.selectedColor ||
-                      ""
+                      item.selectedColor || ""
                     }-${
-                      item.selectedSize ||
-                      ""
+                      item.selectedSize || ""
                     }`}
                   >
-
                     <div className="checkout-product-image">
 
                       <img
@@ -1075,7 +1008,6 @@ function Checkout() {
                       </strong>
 
                     </div>
-
                   </div>
                 );
               })}
@@ -1124,14 +1056,12 @@ function Checkout() {
             {subtotal > 0 &&
               subtotal < 999 && (
                 <div className="checkout-delivery-note">
-
                   Add ₹
                   {(999 - subtotal).toLocaleString(
                     "en-IN"
                   )}{" "}
                   more to unlock FREE
                   delivery.
-
                 </div>
               )}
 
@@ -1144,7 +1074,6 @@ function Checkout() {
             {/* TOTAL */}
 
             <div className="checkout-total">
-
               <span>
                 Total Amount
               </span>
@@ -1155,7 +1084,6 @@ function Checkout() {
                   "en-IN"
                 )}
               </strong>
-
             </div>
 
             {/* PLACE ORDER */}
@@ -1166,7 +1094,7 @@ function Checkout() {
               disabled={loading}
             >
               {loading
-                ? "Placing Order..."
+                ? "Processing..."
                 : "Place Order"}
 
               {!loading && (
@@ -1207,7 +1135,6 @@ function Checkout() {
           </aside>
 
         </form>
-
       </div>
     </main>
   );

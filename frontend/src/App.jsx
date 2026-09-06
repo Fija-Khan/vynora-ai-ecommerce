@@ -13,7 +13,7 @@ import Orders from "./pages/Orders";
 import Payments from "./pages/Payments";
 import OrderDetails from "./pages/OrderDetails";
 import Wishlist from "./pages/Wishlist";
-
+import TrackOrder from "./pages/TrackOrder";
 
 function App() {
   return (
@@ -34,6 +34,7 @@ function App() {
          <Route path="/register" element={<Register />} />
          <Route path="/payments" element={<Payments />} />
          <Route path="/orders/:id" element={<OrderDetails />} />
+         <Route path="/orders/:id/track" element={<TrackOrder />}/>
          <Route path="/wishlist" element={<Wishlist />} />
         <Route path="/login" element={<h1>Login</h1>} />
         <Route path="/register" element={<h1>Register</h1>} />

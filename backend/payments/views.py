@@ -1,6 +1,4 @@
-import razorpay
-
-from django.conf import settings
+from django.shortcuts import get_object_or_404
 
 from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
@@ -19,7 +17,7 @@ class PaymentListView(generics.ListAPIView):
     def get_queryset(self):
         return Payment.objects.filter(
             user=self.request.user
-        )
+        ).select_related('order').order_by('-created_at')
 
 
 class PaymentDetailView(generics.RetrieveAPIView):
@@ -29,14 +27,15 @@ class PaymentDetailView(generics.RetrieveAPIView):
     def get_queryset(self):
         return Payment.objects.filter(
             user=self.request.user
-        )
+        ).select_related('order')
 
 
-class CreateRazorpayOrderView(APIView):
+class CreatePaymentView(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
         order_id = request.data.get('order_id')
+        payment_method = request.data.get('payment_method')
 
         if not order_id:
             return Response(
@@ -46,90 +45,58 @@ class CreateRazorpayOrderView(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        try:
-            order = Order.objects.get(
-                id=order_id,
-                user=request.user
-            )
-        except Order.DoesNotExist:
+        if payment_method not in ['cod', 'online']:
             return Response(
                 {
-                    'error': 'Order not found.'
-                },
-                status=status.HTTP_404_NOT_FOUND
-            )
-
-        # Prevent duplicate Razorpay orders
-        existing_payment = Payment.objects.filter(
-            order=order
-        ).first()
-
-        if existing_payment and existing_payment.razorpay_order_id:
-            return Response(
-                {
-                    'message': 'Razorpay order already exists.',
-                    'payment_id': existing_payment.id,
-                    'razorpay_order_id': existing_payment.razorpay_order_id,
-                    'amount': str(existing_payment.amount),
-                    'currency': 'INR'
-                },
-                status=status.HTTP_200_OK
-            )
-
-        amount = order.total_amount
-
-        if amount <= 0:
-            return Response(
-                {
-                    'error': 'Order amount must be greater than zero.'
+                    'error': 'Invalid payment method.'
                 },
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        client = razorpay.Client(
-            auth=(
-                settings.RAZORPAY_KEY_ID,
-                settings.RAZORPAY_KEY_SECRET
+        order = get_object_or_404(
+            Order,
+            id=order_id,
+            user=request.user
+        )
+
+        if Payment.objects.filter(order=order).exists():
+            payment = Payment.objects.get(order=order)
+
+            return Response(
+                {
+                    'message': 'Payment already exists.',
+                    'payment': PaymentSerializer(payment).data
+                },
+                status=status.HTTP_200_OK
             )
-        )
 
-        razorpay_order = client.order.create(
-            {
-                'amount': int(amount * 100),
-                'currency': 'INR',
-                'receipt': f'order_{order.id}',
-                'payment_capture': 1
-            }
-        )
+        payment_status = 'pending'
 
-        payment, created = Payment.objects.get_or_create(
+        if payment_method == 'cod':
+            payment_status = 'pending'
+
+        elif payment_method == 'online':
+            payment_status = 'success'
+
+        payment = Payment.objects.create(
             order=order,
-            defaults={
-                'user': request.user,
-                'amount': amount,
-                'payment_method': 'razorpay',
-                'razorpay_order_id': razorpay_order['id'],
-                'status': 'pending'
-            }
+            user=request.user,
+            amount=order.total_amount,
+            payment_method=payment_method,
+            status=payment_status
         )
 
-        if not created:
-            payment.user = request.user
-            payment.amount = amount
-            payment.payment_method = 'razorpay'
-            payment.razorpay_order_id = razorpay_order['id']
-            payment.status = 'pending'
-            payment.save()
+        if payment_method == 'online':
+            order.payment_status = 'paid'
+        else:
+            order.payment_status = 'pending'
+
+        order.save(update_fields=['payment_status'])
 
         return Response(
             {
-                'message': 'Razorpay order created successfully.',
-                'payment_id': payment.id,
-                'razorpay_order_id': razorpay_order['id'],
-                'amount': str(amount),
-                'amount_in_paise': razorpay_order['amount'],
-                'currency': razorpay_order['currency'],
-                'razorpay_key_id': settings.RAZORPAY_KEY_ID
+                'message': 'Payment created successfully.',
+                'payment': PaymentSerializer(payment).data
             },
             status=status.HTTP_201_CREATED
         )

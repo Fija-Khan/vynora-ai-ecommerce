@@ -3,12 +3,11 @@ from django.urls import path
 from .views import (
     PaymentListView,
     PaymentDetailView,
-    CreateRazorpayOrderView,
+    CreatePaymentView,
 )
 
 
 urlpatterns = [
-
     path(
         '',
         PaymentListView.as_view(),
@@ -22,8 +21,8 @@ urlpatterns = [
     ),
 
     path(
-        'create-razorpay-order/',
-        CreateRazorpayOrderView.as_view(),
-        name='create-razorpay-order',
+        'create/',
+        CreatePaymentView.as_view(),
+        name='create-payment',
     ),
 ]
