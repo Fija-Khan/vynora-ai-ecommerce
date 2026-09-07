@@ -1,5 +1,8 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+
 import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
+
 import Home from "./pages/Home";
 import "./App.css";
 import Products from "./pages/Products";
@@ -14,6 +17,7 @@ import Payments from "./pages/Payments";
 import OrderDetails from "./pages/OrderDetails";
 import Wishlist from "./pages/Wishlist";
 import TrackOrder from "./pages/TrackOrder";
+import Profile from "./pages/Profile";
 
 function App() {
   return (
@@ -36,9 +40,9 @@ function App() {
          <Route path="/orders/:id" element={<OrderDetails />} />
          <Route path="/orders/:id/track" element={<TrackOrder />}/>
          <Route path="/wishlist" element={<Wishlist />} />
-        <Route path="/login" element={<h1>Login</h1>} />
-        <Route path="/register" element={<h1>Register</h1>} />
+         <Route path="/profile"element={<Profile />}/>
       </Routes>
+      <Footer />
     </BrowserRouter>
   );
 }

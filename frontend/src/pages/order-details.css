@@ -991,3 +991,212 @@
   font-weight: 600;
   text-align: center;
 }
+/* ========================================
+   REORDER / BUY AGAIN BUTTON
+======================================== */
+
+.order-details-reorder-btn {
+  width: 100%;
+  margin-top: 10px;
+  padding: 13px 18px;
+  border: 1px solid #0f766e;
+  border-radius: 10px;
+  background: #0f766e;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.order-details-reorder-btn:hover {
+  background: #115e59;
+  border-color: #115e59;
+}
+
+.order-details-reorder-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+/* ========================================
+   WRITE REVIEW BUTTON
+======================================== */
+
+.order-details-write-review-btn {
+  width: 100%;
+  margin-top: 10px;
+  padding: 11px 16px;
+  border: 1px solid #0f766e;
+  border-radius: 9px;
+  background: transparent;
+  color: #0f766e;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.order-details-write-review-btn:hover {
+  background: #0f766e;
+  color: #ffffff;
+}
+
+
+/* ========================================
+   REVIEW FORM
+======================================== */
+
+.order-details-review-form {
+  width: 100%;
+  margin-top: 10px;
+  padding: 16px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  background: #fafafa;
+}
+
+.order-details-review-form label {
+  display: block;
+  margin-bottom: 8px;
+  color: #111827;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+
+/* ========================================
+   RATING STARS
+======================================== */
+
+.order-details-rating {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+
+.order-details-rating button {
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: #d1d5db;
+  font-size: 25px;
+  line-height: 1;
+  cursor: pointer;
+  transition: color 0.2s ease,
+              transform 0.2s ease;
+}
+
+.order-details-rating button:hover {
+  transform: scale(1.1);
+}
+
+.order-details-rating button.active {
+  color: #f59e0b;
+}
+
+
+/* ========================================
+   REVIEW TEXTAREA
+======================================== */
+
+.order-details-review-form textarea {
+  width: 100%;
+  min-height: 90px;
+  padding: 11px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #111827;
+  font-family: inherit;
+  font-size: 13px;
+  line-height: 1.5;
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.2s ease,
+              box-shadow 0.2s ease;
+}
+
+.order-details-review-form textarea:focus {
+  border-color: #0f766e;
+  box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.1);
+}
+
+.order-details-review-form textarea::placeholder {
+  color: #9ca3af;
+}
+
+
+/* ========================================
+   SUBMIT REVIEW BUTTON
+======================================== */
+
+.order-details-review-submit-btn {
+  width: 100%;
+  margin-top: 10px;
+  padding: 11px 16px;
+  border: none;
+  border-radius: 9px;
+  background: #0f766e;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.order-details-review-submit-btn:hover {
+  background: #115e59;
+}
+
+.order-details-review-submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+
+/* ========================================
+   CANCEL REVIEW BUTTON
+======================================== */
+
+.order-details-review-cancel-btn {
+  width: 100%;
+  margin-top: 8px;
+  padding: 10px 16px;
+  border: 1px solid #d1d5db;
+  border-radius: 9px;
+  background: transparent;
+  color: #6b7280;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.order-details-review-cancel-btn:hover {
+  background: #f3f4f6;
+  color: #111827;
+}
+
+.order-details-review-cancel-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+
+/* ========================================
+   REVIEW SUBMITTED
+======================================== */
+
+.order-details-review-submitted {
+  width: 100%;
+  margin-top: 10px;
+  padding: 11px 16px;
+  border: 1px solid #bbf7d0;
+  border-radius: 9px;
+  background: #f0fdf4;
+  color: #15803d;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+}

@@ -24,6 +24,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         ]
 
     def create(self, validated_data):
+
         password = validated_data.pop('password')
 
         user = User.objects.create_user(
@@ -44,4 +45,5 @@ class ProfileSerializer(serializers.ModelSerializer):
             'phone',
             'profile_image',
         ]
+
         read_only_fields = ['username']

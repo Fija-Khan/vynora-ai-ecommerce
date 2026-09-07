@@ -6,6 +6,7 @@ from .serializers import ReviewSerializer
 
 
 class ReviewListCreateView(generics.ListCreateAPIView):
+
     serializer_class = ReviewSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
 
@@ -21,11 +22,14 @@ class ReviewListCreateView(generics.ListCreateAPIView):
 
 
 class ReviewDetailView(generics.RetrieveUpdateDestroyAPIView):
+
     serializer_class = ReviewSerializer
     permission_classes = [IsAuthenticatedOrReadOnly]
 
     def get_queryset(self):
-        return Review.objects.all()
+        return Review.objects.filter(
+            user=self.request.user
+        )
 
     def perform_update(self, serializer):
         serializer.save()

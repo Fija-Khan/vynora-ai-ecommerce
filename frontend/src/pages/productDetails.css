@@ -941,3 +941,7 @@
     height: 280px;
   }
 }
+.wishlist-btn.wishlisted {
+  color: #0f766e;
+  border-color: #0f766e;
+}
