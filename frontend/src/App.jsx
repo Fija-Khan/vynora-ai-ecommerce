@@ -18,6 +18,7 @@ import OrderDetails from "./pages/OrderDetails";
 import Wishlist from "./pages/Wishlist";
 import TrackOrder from "./pages/TrackOrder";
 import Profile from "./pages/Profile";
+import Contact from "./pages/Contact";
 
 function App() {
   return (
@@ -41,6 +42,7 @@ function App() {
          <Route path="/orders/:id/track" element={<TrackOrder />}/>
          <Route path="/wishlist" element={<Wishlist />} />
          <Route path="/profile"element={<Profile />}/>
+         <Route path="/contact" element={<Contact />} />
       </Routes>
       <Footer />
     </BrowserRouter>

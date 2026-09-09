@@ -162,6 +162,13 @@ function Navbar() {
             >
               BEAUTY
             </Link>
+             <Link
+  to="/contact"
+  className="vynora-nav-link"
+  onClick={closeMenus}
+>
+  CONTACT
+</Link>
           </div>
 
           {/* ========================================

@@ -1,0 +1,725 @@
+/* =========================================================
+   VYNORA CONTACT PAGE
+   ========================================================= */
+
+.vynora-contact-page {
+  background: #faf7f0;
+  color: #1f2937;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+.vynora-contact-page *,
+.vynora-contact-page *::before,
+.vynora-contact-page *::after {
+  box-sizing: border-box;
+}
+
+/* =========================================================
+   CONTACT HERO
+   ========================================================= */
+
+.vynora-contact-hero {
+  padding: 96px 20px;
+  background: #0f766e;
+  color: #ffffff;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.vynora-contact-hero::before {
+  content: "";
+  position: absolute;
+  width: 320px;
+  height: 320px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+  top: -180px;
+  left: -120px;
+}
+
+.vynora-contact-hero::after {
+  content: "";
+  position: absolute;
+  width: 380px;
+  height: 380px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.04);
+  bottom: -240px;
+  right: -140px;
+}
+
+.vynora-contact-hero .container {
+  position: relative;
+  z-index: 1;
+}
+
+.vynora-contact-hero-content {
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.vynora-contact-eyebrow {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2.5px;
+  margin-bottom: 18px;
+  opacity: 0.85;
+}
+
+.vynora-contact-hero h1 {
+  margin: 0 0 18px;
+  font-size: clamp(36px, 5vw, 56px);
+  line-height: 1.1;
+  font-weight: 700;
+  letter-spacing: -1.5px;
+}
+
+.vynora-contact-hero p {
+  max-width: 650px;
+  margin: 0 auto;
+  font-size: 17px;
+  line-height: 1.75;
+  opacity: 0.92;
+}
+
+/* =========================================================
+   CONTACT SECTION
+   ========================================================= */
+
+.vynora-contact-section {
+  padding: 90px 0;
+}
+
+.vynora-contact-info {
+  padding: 15px 30px 15px 0;
+}
+
+.vynora-section-label {
+  display: inline-block;
+  color: #0f766e;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.8px;
+  margin-bottom: 14px;
+}
+
+.vynora-contact-info h2 {
+  margin: 0 0 18px;
+  color: #111827;
+  font-size: clamp(30px, 3vw, 40px);
+  line-height: 1.2;
+  font-weight: 700;
+  letter-spacing: -0.7px;
+}
+
+.vynora-contact-description {
+  max-width: 500px;
+  margin: 0 0 38px;
+  color: #6b7280;
+  font-size: 16px;
+  line-height: 1.75;
+}
+
+/* =========================================================
+   CONTACT DETAILS
+   ========================================================= */
+
+.vynora-contact-details {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.vynora-contact-detail {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.vynora-contact-icon {
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #e6f4f1;
+  color: #0f766e;
+  border: 1px solid rgba(15, 118, 110, 0.08);
+  border-radius: 50%;
+  font-size: 19px;
+  transition:
+    background 0.3s ease,
+    color 0.3s ease,
+    transform 0.3s ease;
+}
+
+.vynora-contact-detail:hover .vynora-contact-icon {
+  background: #0f766e;
+  color: #ffffff;
+  transform: translateY(-2px);
+}
+
+.vynora-contact-detail span {
+  display: block;
+  margin-bottom: 5px;
+  color: #6b7280;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.vynora-contact-detail a {
+  color: #111827;
+  text-decoration: none;
+  font-size: 15px;
+  font-weight: 500;
+  transition: color 0.3s ease;
+  word-break: break-word;
+}
+
+.vynora-contact-detail a:hover {
+  color: #0f766e;
+}
+
+.vynora-contact-detail p {
+  margin: 0;
+  color: #374151;
+  font-size: 15px;
+  line-height: 1.65;
+}
+
+/* =========================================================
+   CONTACT FORM CARD
+   ========================================================= */
+
+.vynora-contact-form-card {
+  width: 100%;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 20px;
+  padding: 42px;
+  box-shadow: 0 15px 40px rgba(15, 118, 110, 0.08);
+}
+
+.vynora-form-header {
+  margin-bottom: 30px;
+}
+
+.vynora-form-header h2 {
+  margin: 0 0 9px;
+  color: #111827;
+  font-size: 29px;
+  line-height: 1.25;
+  font-weight: 700;
+  letter-spacing: -0.4px;
+}
+
+.vynora-form-header p {
+  margin: 0;
+  color: #6b7280;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+/* =========================================================
+   FORM
+   ========================================================= */
+
+.vynora-contact-form-card label {
+  display: block;
+  margin-bottom: 8px;
+  color: #374151;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.vynora-contact-form-card input,
+.vynora-contact-form-card textarea {
+  width: 100%;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  padding: 13px 15px;
+  background: #ffffff;
+  color: #111827;
+  font-family: inherit;
+  font-size: 15px;
+  outline: none;
+  transition:
+    border-color 0.3s ease,
+    box-shadow 0.3s ease,
+    background 0.3s ease;
+}
+
+.vynora-contact-form-card input {
+  height: 49px;
+}
+
+.vynora-contact-form-card textarea {
+  min-height: 145px;
+  resize: vertical;
+  line-height: 1.6;
+}
+
+.vynora-contact-form-card input::placeholder,
+.vynora-contact-form-card textarea::placeholder {
+  color: #9ca3af;
+}
+
+.vynora-contact-form-card input:hover,
+.vynora-contact-form-card textarea:hover {
+  border-color: #9ca3af;
+}
+
+.vynora-contact-form-card input:focus,
+.vynora-contact-form-card textarea:focus {
+  border-color: #0f766e;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(15, 118, 110, 0.1);
+}
+
+/* =========================================================
+   SUCCESS MESSAGE
+   ========================================================= */
+
+.vynora-success-message {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 22px;
+  padding: 13px 16px;
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  border-radius: 10px;
+  color: #047857;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+/* =========================================================
+   SUBMIT BUTTON
+   ========================================================= */
+
+.vynora-contact-submit {
+  width: 100%;
+  min-height: 50px;
+  border: none;
+  border-radius: 10px;
+  padding: 14px 20px;
+  background: #0f766e;
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+
+  transition:
+    background 0.3s ease,
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.vynora-contact-submit span {
+  font-size: 20px;
+  line-height: 1;
+  transition: transform 0.3s ease;
+}
+
+.vynora-contact-submit:hover {
+  background: #115e59;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(15, 118, 110, 0.2);
+}
+
+.vynora-contact-submit:hover span {
+  transform: translateX(5px);
+}
+
+.vynora-contact-submit:active {
+  transform: translateY(0);
+}
+
+.vynora-contact-submit:focus-visible {
+  outline: 3px solid rgba(15, 118, 110, 0.25);
+  outline-offset: 3px;
+}
+
+/* =========================================================
+   QUICK HELP
+   ========================================================= */
+
+.vynora-contact-help {
+  padding: 80px 20px;
+  background: #f0fdfa;
+  text-align: center;
+}
+
+.vynora-help-content {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.vynora-help-content h2 {
+  margin: 0 0 15px;
+  color: #111827;
+  font-size: clamp(28px, 4vw, 36px);
+  line-height: 1.25;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.vynora-help-content p {
+  max-width: 620px;
+  margin: 0 auto 26px;
+  color: #6b7280;
+  font-size: 16px;
+  line-height: 1.75;
+}
+
+.vynora-help-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: #0f766e;
+  font-size: 15px;
+  font-weight: 700;
+  text-decoration: none;
+  transition:
+    color 0.3s ease,
+    transform 0.3s ease;
+}
+
+.vynora-help-link:hover {
+  color: #115e59;
+  transform: translateX(4px);
+}
+
+.vynora-help-link:focus-visible {
+  outline: 3px solid rgba(15, 118, 110, 0.2);
+  outline-offset: 4px;
+}
+
+/* =========================================================
+   LARGE TABLETS / SMALL LAPTOPS
+   ========================================================= */
+
+@media (max-width: 1199px) {
+  .vynora-contact-section {
+    padding: 75px 0;
+  }
+
+  .vynora-contact-info {
+    padding-right: 15px;
+  }
+
+  .vynora-contact-form-card {
+    padding: 36px;
+  }
+}
+
+/* =========================================================
+   TABLETS
+   ========================================================= */
+
+@media (max-width: 991px) {
+  .vynora-contact-hero {
+    padding: 78px 20px;
+  }
+
+  .vynora-contact-section {
+    padding: 65px 0;
+  }
+
+  .vynora-contact-info {
+    padding: 0;
+  }
+
+  .vynora-contact-description {
+    margin-bottom: 30px;
+  }
+
+  .vynora-contact-form-card {
+    padding: 32px;
+    border-radius: 17px;
+  }
+
+  .vynora-contact-help {
+    padding: 65px 20px;
+  }
+}
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 767px) {
+  .vynora-contact-hero {
+    padding: 65px 20px;
+  }
+
+  .vynora-contact-eyebrow {
+    font-size: 11px;
+    letter-spacing: 2px;
+    margin-bottom: 15px;
+  }
+
+  .vynora-contact-hero h1 {
+    font-size: 38px;
+    letter-spacing: -1px;
+  }
+
+  .vynora-contact-hero p {
+    font-size: 15px;
+    line-height: 1.7;
+  }
+
+  .vynora-contact-section {
+    padding: 55px 0;
+  }
+
+  .vynora-contact-info {
+    padding: 0;
+  }
+
+  .vynora-contact-info h2 {
+    font-size: 31px;
+  }
+
+  .vynora-contact-description {
+    font-size: 15px;
+    margin-bottom: 28px;
+  }
+
+  .vynora-contact-details {
+    gap: 20px;
+  }
+
+  .vynora-contact-detail {
+    gap: 13px;
+  }
+
+  .vynora-contact-icon {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    font-size: 17px;
+  }
+
+  .vynora-contact-detail a,
+  .vynora-contact-detail p {
+    font-size: 14px;
+  }
+
+  .vynora-contact-form-card {
+    padding: 26px 22px;
+    border-radius: 15px;
+  }
+
+  .vynora-form-header {
+    margin-bottom: 24px;
+  }
+
+  .vynora-form-header h2 {
+    font-size: 25px;
+  }
+
+  .vynora-form-header p {
+    font-size: 14px;
+  }
+
+  .vynora-contact-form-card input {
+    height: 47px;
+  }
+
+  .vynora-contact-form-card textarea {
+    min-height: 135px;
+  }
+
+  .vynora-contact-help {
+    padding: 58px 20px;
+  }
+
+  .vynora-help-content h2 {
+    font-size: 29px;
+  }
+
+  .vynora-help-content p {
+    font-size: 15px;
+  }
+}
+
+/* =========================================================
+   SMALL MOBILE
+   ========================================================= */
+
+@media (max-width: 480px) {
+  .vynora-contact-hero {
+    padding: 55px 16px;
+  }
+
+  .vynora-contact-eyebrow {
+    font-size: 10px;
+    letter-spacing: 1.7px;
+  }
+
+  .vynora-contact-hero h1 {
+    font-size: 32px;
+    margin-bottom: 15px;
+  }
+
+  .vynora-contact-hero p {
+    font-size: 14px;
+  }
+
+  .vynora-contact-section {
+    padding: 45px 0;
+  }
+
+  .vynora-section-label {
+    font-size: 11px;
+    letter-spacing: 1.5px;
+  }
+
+  .vynora-contact-info h2 {
+    font-size: 28px;
+  }
+
+  .vynora-contact-description {
+    font-size: 14px;
+    line-height: 1.65;
+  }
+
+  .vynora-contact-details {
+    gap: 18px;
+  }
+
+  .vynora-contact-detail {
+    gap: 11px;
+  }
+
+  .vynora-contact-icon {
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    font-size: 16px;
+  }
+
+  .vynora-contact-detail span {
+    font-size: 12px;
+  }
+
+  .vynora-contact-detail a,
+  .vynora-contact-detail p {
+    font-size: 13px;
+  }
+
+  .vynora-contact-form-card {
+    padding: 22px 16px;
+    border-radius: 13px;
+  }
+
+  .vynora-form-header h2 {
+    font-size: 23px;
+  }
+
+  .vynora-contact-form-card label {
+    font-size: 13px;
+  }
+
+  .vynora-contact-form-card input,
+  .vynora-contact-form-card textarea {
+    font-size: 14px;
+  }
+
+  .vynora-success-message {
+    font-size: 13px;
+    padding: 12px 13px;
+  }
+
+  .vynora-contact-submit {
+    min-height: 48px;
+    font-size: 14px;
+  }
+
+  .vynora-contact-help {
+    padding: 50px 16px;
+  }
+
+  .vynora-help-content h2 {
+    font-size: 26px;
+  }
+
+  .vynora-help-content p {
+    font-size: 14px;
+  }
+}
+
+/* =========================================================
+   EXTRA SMALL DEVICES
+   ========================================================= */
+
+@media (max-width: 360px) {
+  .vynora-contact-hero {
+    padding: 48px 14px;
+  }
+
+  .vynora-contact-hero h1 {
+    font-size: 29px;
+  }
+
+  .vynora-contact-section {
+    padding: 40px 0;
+  }
+
+  .vynora-contact-info h2 {
+    font-size: 26px;
+  }
+
+  .vynora-contact-form-card {
+    padding: 20px 14px;
+  }
+
+  .vynora-form-header h2 {
+    font-size: 21px;
+  }
+
+  .vynora-contact-detail {
+    align-items: flex-start;
+  }
+
+  .vynora-contact-icon {
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+  }
+
+  .vynora-contact-help {
+    padding: 45px 14px;
+  }
+
+  .vynora-help-content h2 {
+    font-size: 24px;
+  }
+}
+
+/* =========================================================
+   REDUCED MOTION
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .vynora-contact-page *,
+  .vynora-contact-page *::before,
+  .vynora-contact-page *::after {
+    scroll-behavior: auto !important;
+    transition: none !important;
+    animation: none !important;
+  }
+}
