@@ -19,7 +19,7 @@ import Wishlist from "./pages/Wishlist";
 import TrackOrder from "./pages/TrackOrder";
 import Profile from "./pages/Profile";
 import Contact from "./pages/Contact";
-
+import CreateRecommendations from "./pages/CreateRecommendations";
 function App() {
   return (
     <BrowserRouter>
@@ -29,20 +29,20 @@ function App() {
         <Route path="/" element={<Home />} />
 
         <Route path="/products" element={<Products />} />
-        <Route path="/products/:id" element={<ProductDetails />}
-/>
+        <Route path="/products/:id" element={<ProductDetails />} />
         <Route path="/cart" element={<Cart />} />
-         <Route path="/checkout" element={<Checkout />} />
-         <Route path="/order-success"element={<OrderSuccess />}/>
-         <Route path="/orders" element={<Orders />} />
-         <Route path="/login" element={<Login />} />
-         <Route path="/register" element={<Register />} />
-         <Route path="/payments" element={<Payments />} />
-         <Route path="/orders/:id" element={<OrderDetails />} />
-         <Route path="/orders/:id/track" element={<TrackOrder />}/>
-         <Route path="/wishlist" element={<Wishlist />} />
-         <Route path="/profile"element={<Profile />}/>
-         <Route path="/contact" element={<Contact />} />
+        <Route path="/checkout" element={<Checkout />} />
+        <Route path="/order-success" element={<OrderSuccess />} />
+        <Route path="/orders" element={<Orders />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/payments" element={<Payments />} />
+        <Route path="/orders/:id" element={<OrderDetails />} />
+        <Route path="/orders/:id/track" element={<TrackOrder />} />
+        <Route path="/wishlist" element={<Wishlist />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/recommendations" element={<CreateRecommendations />} />
       </Routes>
       <Footer />
     </BrowserRouter>

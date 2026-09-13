@@ -16,6 +16,13 @@ function ProductDetails() {
 
   const [relatedProducts, setRelatedProducts] = useState([]);
 
+  // =========================================
+  // RECOMMENDATION STATES
+  // =========================================
+
+  const [recommendations, setRecommendations] = useState([]);
+  const [recommendationLoading, setRecommendationLoading] = useState(true);
+
   const [quantity, setQuantity] = useState(1);
 
   const [selectedColor, setSelectedColor] = useState("");
@@ -88,6 +95,7 @@ function ProductDetails() {
         setLoading(false);
 
       }
+
     };
 
     fetchProduct();
@@ -107,8 +115,11 @@ function ProductDetails() {
       );
 
       if (!accessToken) {
+
         setIsWishlisted(false);
+
         return;
+
       }
 
       try {
@@ -140,6 +151,7 @@ function ProductDetails() {
         );
 
       }
+
     };
 
     checkWishlist();
@@ -170,6 +182,7 @@ function ProductDetails() {
       navigate("/login");
 
       return;
+
     }
 
     // -----------------------------------------
@@ -181,6 +194,7 @@ function ProductDetails() {
       navigate("/wishlist");
 
       return;
+
     }
 
     try {
@@ -247,6 +261,7 @@ function ProductDetails() {
       setWishlistLoading(false);
 
     }
+
   };
 
   // =========================================
@@ -290,10 +305,56 @@ function ProductDetails() {
         setRelatedLoading(false);
 
       }
+
     };
 
     if (product) {
+
       fetchRelatedProducts();
+
+    }
+
+  }, [product, id]);
+
+  // =========================================
+  // FETCH RECOMMENDATIONS
+  // =========================================
+
+  useEffect(() => {
+
+    const fetchRecommendations = async () => {
+
+      try {
+
+        setRecommendationLoading(true);
+
+        const response = await axios.get(
+          `http://127.0.0.1:8000/api/recommendations/products/?product=${id}`
+        );
+
+        setRecommendations(response.data);
+
+      } catch (error) {
+
+        console.error(
+          "Failed to fetch recommendations:",
+          error
+        );
+
+        setRecommendations([]);
+
+      } finally {
+
+        setRecommendationLoading(false);
+
+      }
+
+    };
+
+    if (product) {
+
+      fetchRecommendations();
+
     }
 
   }, [product, id]);
@@ -332,6 +393,7 @@ function ProductDetails() {
         setReviewLoading(false);
 
       }
+
     };
 
     fetchReviews();
@@ -368,6 +430,7 @@ function ProductDetails() {
       );
 
     }
+
   };
 
   // =========================================
@@ -383,6 +446,7 @@ function ProductDetails() {
       );
 
     }
+
   };
 
   // =========================================
@@ -410,6 +474,7 @@ function ProductDetails() {
       navigate("/login");
 
       return;
+
     }
 
     // -----------------------------------------
@@ -417,14 +482,18 @@ function ProductDetails() {
     // -----------------------------------------
 
     if (!product) {
+
       return;
+
     }
 
     const stock =
       Number(product.stock || 0);
 
     if (stock <= 0) {
+
       return;
+
     }
 
     // -----------------------------------------
@@ -465,6 +534,7 @@ function ProductDetails() {
       selectedSize: selectedSize,
 
       stock: stock,
+
     };
 
     // -----------------------------------------
@@ -490,6 +560,7 @@ function ProductDetails() {
       );
 
       existingCart = [];
+
     }
 
     // -----------------------------------------
@@ -591,6 +662,7 @@ function ProductDetails() {
       navigate("/login");
 
       return;
+
     }
 
     // -----------------------------------------
@@ -604,6 +676,7 @@ function ProductDetails() {
       );
 
       return;
+
     }
 
     try {
@@ -617,11 +690,14 @@ function ProductDetails() {
           "http://127.0.0.1:8000/api/reviews/",
           {
             product: Number(id),
+
             rating: Number(
               reviewRating
             ),
+
             comment:
               reviewComment.trim(),
+
           },
           {
             headers: {
@@ -698,6 +774,7 @@ function ProductDetails() {
       setReviewSubmitting(false);
 
     }
+
   };
 
   // =========================================
@@ -729,11 +806,15 @@ function ProductDetails() {
       <main className="product-details-page">
 
         <p className="product-details-message">
+
           Loading product...
+
         </p>
 
       </main>
+
     );
+
   }
 
   // =========================================
@@ -747,19 +828,25 @@ function ProductDetails() {
       <main className="product-details-page">
 
         <p className="product-details-message">
+
           {error ||
             "Product not found."}
+
         </p>
 
         <Link
           to="/products"
           className="back-products-link"
         >
+
           ← Back to Products
+
         </Link>
 
       </main>
+
     );
+
   }
 
   // =========================================
@@ -800,7 +887,9 @@ function ProductDetails() {
           to="/products"
           className="back-products-link"
         >
+
           ← Back to Products
+
         </Link>
 
         {/* =====================================
@@ -823,7 +912,9 @@ function ProductDetails() {
             ) : (
 
               <div className="product-details-no-image">
+
                 No Image
+
               </div>
 
             )}
@@ -833,7 +924,9 @@ function ProductDetails() {
             {discount > 0 && (
 
               <span className="product-details-discount">
+
                 {discount}% OFF
+
               </span>
 
             )}
@@ -847,21 +940,27 @@ function ProductDetails() {
             {/* BRAND */}
 
             <span className="product-details-brand">
+
               {product.brand ||
                 "VYNORA"}
+
             </span>
 
             {/* CATEGORY */}
 
             <span className="product-details-category">
+
               {product.category_name ||
                 "Collection"}
+
             </span>
 
             {/* PRODUCT NAME */}
 
             <h1>
+
               {product.name}
+
             </h1>
 
             {/* PRICE */}
@@ -869,19 +968,23 @@ function ProductDetails() {
             <div className="product-details-price">
 
               <span className="details-selling-price">
+
                 ₹
                 {price.toLocaleString(
                   "en-IN"
                 )}
+
               </span>
 
               {discount > 0 && (
 
                 <span className="details-mrp">
+
                   ₹
                   {mrp.toLocaleString(
                     "en-IN"
                   )}
+
                 </span>
 
               )}
@@ -889,7 +992,9 @@ function ProductDetails() {
               {discount > 0 && (
 
                 <span className="details-discount">
+
                   {discount}% OFF
+
                 </span>
 
               )}
@@ -899,7 +1004,9 @@ function ProductDetails() {
             {/* TAX */}
 
             <p className="tax-info">
+
               Inclusive of all taxes
+
             </p>
 
             {/* DESCRIPTION */}
@@ -907,12 +1014,16 @@ function ProductDetails() {
             <div className="product-details-description">
 
               <h3>
+
                 Product Details
+
               </h3>
 
               <p>
+
                 {product.description ||
                   "No description available for this product."}
+
               </p>
 
             </div>
@@ -928,13 +1039,17 @@ function ProductDetails() {
                 <div className="variant-heading">
 
                   <h4>
+
                     Color
+
                   </h4>
 
                   {selectedColor && (
 
                     <span>
+
                       {selectedColor}
+
                     </span>
 
                   )}
@@ -960,7 +1075,9 @@ function ProductDetails() {
                           )
                         }
                       >
+
                         {color}
+
                       </button>
 
                     )
@@ -983,13 +1100,17 @@ function ProductDetails() {
                 <div className="variant-heading">
 
                   <h4>
+
                     Size
+
                   </h4>
 
                   {selectedSize && (
 
                     <span>
+
                       {selectedSize}
+
                     </span>
 
                   )}
@@ -1015,7 +1136,9 @@ function ProductDetails() {
                           )
                         }
                       >
+
                         {size}
+
                       </button>
 
                     )
@@ -1038,10 +1161,12 @@ function ProductDetails() {
                   : "stock-unavailable"
               }`}
             >
+
               {product.stock_status ||
                 (stock > 0
                   ? `${stock} items available`
                   : "Out of stock")}
+
             </div>
 
             {/* =====================================
@@ -1053,7 +1178,9 @@ function ProductDetails() {
               <div className="quantity-section">
 
                 <h4>
+
                   Quantity
+
                 </h4>
 
                 <div className="quantity-control">
@@ -1067,11 +1194,15 @@ function ProductDetails() {
                       quantity <= 1
                     }
                   >
+
                     −
+
                   </button>
 
                   <span>
+
                     {quantity}
+
                   </span>
 
                   <button
@@ -1083,7 +1214,9 @@ function ProductDetails() {
                       quantity >= stock
                     }
                   >
+
                     +
+
                   </button>
 
                 </div>
@@ -1108,9 +1241,11 @@ function ProductDetails() {
                   handleAddToCart
                 }
               >
+
                 {stock > 0
                   ? "Add to Cart"
                   : "Out of Stock"}
+
               </button>
 
               <button
@@ -1132,11 +1267,13 @@ function ProductDetails() {
                   wishlistLoading
                 }
               >
+
                 {wishlistLoading
                   ? "..."
                   : isWishlisted
                     ? "♥"
                     : "♡"}
+
               </button>
 
             </div>
@@ -1154,15 +1291,21 @@ function ProductDetails() {
           <div className="reviews-heading">
 
             <span>
+
               Customer Feedback
+
             </span>
 
             <h2>
+
               Ratings & Reviews
+
             </h2>
 
             <p>
+
               See what customers think about this product.
+
             </p>
 
           </div>
@@ -1174,7 +1317,9 @@ function ProductDetails() {
             <div className="average-rating">
 
               <strong>
+
                 {averageRating}
+
               </strong>
 
               <div className="rating-stars">
@@ -1199,10 +1344,13 @@ function ProductDetails() {
               </div>
 
               <span>
+
                 {reviews.length}{" "}
+
                 {reviews.length === 1
                   ? "Review"
                   : "Reviews"}
+
               </span>
 
             </div>
@@ -1214,7 +1362,9 @@ function ProductDetails() {
           <div className="review-form-container">
 
             <h3>
+
               Write a Review
+
             </h3>
 
             <form
@@ -1229,7 +1379,9 @@ function ProductDetails() {
               <div className="review-rating-field">
 
                 <label>
+
                   Your Rating
+
                 </label>
 
                 <div className="review-rating-buttons">
@@ -1252,7 +1404,9 @@ function ProductDetails() {
                           )
                         }
                       >
+
                         ★
+
                       </button>
 
                     )
@@ -1267,7 +1421,9 @@ function ProductDetails() {
               <div className="review-comment-field">
 
                 <label htmlFor="review-comment">
+
                   Your Comment
+
                 </label>
 
                 <textarea
@@ -1293,7 +1449,9 @@ function ProductDetails() {
               {reviewError && (
 
                 <p className="review-error">
+
                   {reviewError}
+
                 </p>
 
               )}
@@ -1307,9 +1465,11 @@ function ProductDetails() {
                   reviewSubmitting
                 }
               >
+
                 {reviewSubmitting
                   ? "Submitting..."
                   : "Submit Review"}
+
               </button>
 
             </form>
@@ -1321,13 +1481,17 @@ function ProductDetails() {
           <div className="reviews-list">
 
             <h3>
+
               Customer Reviews
+
             </h3>
 
             {reviewLoading ? (
 
               <p className="review-message">
+
                 Loading reviews...
+
               </p>
 
             ) : reviews.length > 0 ? (
@@ -1345,8 +1509,10 @@ function ProductDetails() {
                       <div>
 
                         <strong>
+
                           {review.user_name ||
                             "Customer"}
+
                         </strong>
 
                         <div className="review-stars">
@@ -1371,11 +1537,13 @@ function ProductDetails() {
                       {review.created_at && (
 
                         <time>
+
                           {new Date(
                             review.created_at
                           ).toLocaleDateString(
                             "en-IN"
                           )}
+
                         </time>
 
                       )}
@@ -1385,7 +1553,9 @@ function ProductDetails() {
                     {review.comment && (
 
                       <p className="review-comment">
+
                         {review.comment}
+
                       </p>
 
                     )}
@@ -1398,7 +1568,9 @@ function ProductDetails() {
             ) : (
 
               <p className="review-message">
+
                 No reviews yet. Be the first to review this product!
+
               </p>
 
             )}
@@ -1416,15 +1588,21 @@ function ProductDetails() {
           <div className="related-products-heading">
 
             <span>
+
               Discover More
+
             </span>
 
             <h2>
+
               Related Products
+
             </h2>
 
             <p>
+
               You may also like these products.
+
             </p>
 
           </div>
@@ -1434,7 +1612,9 @@ function ProductDetails() {
           {relatedLoading ? (
 
             <p className="related-message">
+
               Loading related products...
+
             </p>
 
           ) : relatedProducts.length > 0 ? (
@@ -1480,7 +1660,9 @@ function ProductDetails() {
                           ) : (
 
                             <span>
+
                               No Image
+
                             </span>
 
                           )}
@@ -1492,30 +1674,40 @@ function ProductDetails() {
                         <div className="related-product-content">
 
                           <span>
+
                             {relatedProduct.brand ||
                               "VYNORA"}
+
                           </span>
 
                           <small>
+
                             {relatedProduct.category_name ||
                               "Collection"}
+
                           </small>
 
                           <h3>
+
                             {relatedProduct.name}
+
                           </h3>
 
                           <p>
+
                             ₹
                             {relatedPrice.toLocaleString(
                               "en-IN"
                             )}
+
                           </p>
 
                           <Link
                             to={`/products/${relatedProduct.id}`}
                           >
+
                             View Product →
+
                           </Link>
 
                         </div>
@@ -1523,6 +1715,7 @@ function ProductDetails() {
                       </div>
 
                     );
+
                   }
                 )}
 
@@ -1531,7 +1724,157 @@ function ProductDetails() {
           ) : (
 
             <p className="related-message">
+
               No related products available.
+
+            </p>
+
+          )}
+
+        </section>
+
+        {/* =========================================
+            RECOMMENDED FOR YOU
+        ========================================= */}
+
+        <section className="related-products-section">
+
+          <div className="related-products-heading">
+
+            <span>
+
+              VYNORA AI
+
+            </span>
+
+            <h2>
+
+              Recommended For You
+
+            </h2>
+
+            <p>
+
+              Products you may love based on your interests.
+
+            </p>
+
+          </div>
+
+          {recommendationLoading ? (
+
+            <p className="related-message">
+
+              Finding products you may like...
+
+            </p>
+
+          ) : recommendations.length > 0 ? (
+
+            <div className="related-products-grid">
+
+              {recommendations
+                .slice(0, 4)
+                .map(
+                  (recommendedProduct) => {
+
+                    const recommendedPrice =
+                      Number(
+                        recommendedProduct.selling_price ||
+                          recommendedProduct.price ||
+                          0
+                      );
+
+                    return (
+
+                      <div
+                        className="related-product-card"
+                        key={
+                          recommendedProduct.id
+                        }
+                      >
+
+                        <div className="related-product-image">
+
+                          {recommendedProduct.image ? (
+
+                            <img
+                              src={
+                                recommendedProduct.image
+                              }
+                              alt={
+                                recommendedProduct.name
+                              }
+                            />
+
+                          ) : (
+
+                            <span>
+
+                              No Image
+
+                            </span>
+
+                          )}
+
+                        </div>
+
+                        <div className="related-product-content">
+
+                          <span>
+
+                            {recommendedProduct.brand ||
+                              "VYNORA"}
+
+                          </span>
+
+                          <small>
+
+                            {recommendedProduct.category_name ||
+                              "Collection"}
+
+                          </small>
+
+                          <h3>
+
+                            {recommendedProduct.name}
+
+                          </h3>
+
+                          <p>
+
+                            ₹
+                            {recommendedPrice.toLocaleString(
+                              "en-IN"
+                            )}
+
+                          </p>
+
+                          <Link
+                            to={`/products/${recommendedProduct.id}`}
+                          >
+
+                            View Product →
+
+                          </Link>
+
+                        </div>
+
+                      </div>
+
+                    );
+
+                  }
+                )}
+
+            </div>
+
+          ) : (
+
+            <p className="related-message">
+
+              No recommendations available.
+
             </p>
 
           )}
@@ -1543,6 +1886,7 @@ function ProductDetails() {
     </main>
 
   );
+
 }
 
 export default ProductDetails;
