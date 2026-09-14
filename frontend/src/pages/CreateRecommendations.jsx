@@ -5,7 +5,6 @@ import "./createRecommendations.css";
 
 function CreateRecommendations() {
   const [searchParams] = useSearchParams();
-
   const productId = searchParams.get("product");
 
   const [recommendations, setRecommendations] = useState([]);
@@ -30,10 +29,7 @@ function CreateRecommendations() {
 
         setRecommendations(response.data);
       } catch (error) {
-        console.error(
-          "Failed to fetch recommendations:",
-          error
-        );
+        console.error("Failed to fetch recommendations:", error);
 
         setError(
           error.response?.data?.detail ||
@@ -169,17 +165,13 @@ function CreateRecommendations() {
                     <div className="recommendation-price">
                       <strong>
                         ₹
-                        {price.toLocaleString(
-                          "en-IN"
-                        )}
+                        {price.toLocaleString("en-IN")}
                       </strong>
 
                       {discount > 0 && (
                         <span>
                           ₹
-                          {mrp.toLocaleString(
-                            "en-IN"
-                          )}
+                          {mrp.toLocaleString("en-IN")}
                         </span>
                       )}
                     </div>
@@ -201,7 +193,6 @@ function CreateRecommendations() {
             for this product.
           </div>
         )}
-
       </div>
     </main>
   );

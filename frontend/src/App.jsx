@@ -20,6 +20,7 @@ import TrackOrder from "./pages/TrackOrder";
 import Profile from "./pages/Profile";
 import Contact from "./pages/Contact";
 import CreateRecommendations from "./pages/CreateRecommendations";
+import Chatbot from "./components/Chatbot";
 function App() {
   return (
     <BrowserRouter>
@@ -43,6 +44,7 @@ function App() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/recommendations" element={<CreateRecommendations />} />
+        <Route path="/chatbot" element={<Chatbot />} />
       </Routes>
       <Footer />
     </BrowserRouter>
