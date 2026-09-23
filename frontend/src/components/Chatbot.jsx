@@ -134,7 +134,9 @@ const Chatbot = () => {
               </p>
 
               <div className="suggestions">
+
                 <button
+                  type="button"
                   onClick={() =>
                     setInput("Help me find a good product")
                   }
@@ -143,6 +145,7 @@ const Chatbot = () => {
                 </button>
 
                 <button
+                  type="button"
                   onClick={() =>
                     setInput("What products do you recommend?")
                   }
@@ -151,12 +154,14 @@ const Chatbot = () => {
                 </button>
 
                 <button
+                  type="button"
                   onClick={() =>
                     setInput("How can you help me?")
                   }
                 >
                   How can you help?
                 </button>
+
               </div>
             </div>
           )}
@@ -165,7 +170,9 @@ const Chatbot = () => {
             <div
               key={msg.id || index}
               className={`chat-message ${
-                msg.role === "user" ? "user-message" : "ai-message"
+                msg.role === "user"
+                  ? "user-message"
+                  : "ai-message"
               }`}
             >
               <div className="message-bubble">
@@ -183,6 +190,7 @@ const Chatbot = () => {
               </div>
             </div>
           )}
+
         </div>
 
         {/* Input */}
