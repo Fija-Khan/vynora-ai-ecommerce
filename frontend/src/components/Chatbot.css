@@ -1,35 +1,59 @@
 /* =========================================
-   VYNORA AI CHATBOT
+   VYNORA AI FLOATING CHATBOT
    ========================================= */
 
-.chatbot-page {
-  min-height: calc(100vh - 80px);
-  background: #faf7f0;
-  padding: 40px 20px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.chatbot-floating-button {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  width: 52px;
+  height: 52px;
+  border: none;
+  border-radius: 50%;
+  background: #0f766e;
+  color: #ffffff;
+  font-size: 23px;
+  cursor: pointer;
+  z-index: 9999;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+  transition: all 0.25s ease;
 }
 
-.chatbot-container {
-  width: 100%;
-  max-width: 850px;
-  height: 720px;
+.chatbot-floating-button:hover {
+  transform: scale(1.06);
+  background: #095c56;
+}
+
+
+/* =========================================
+   CHAT WINDOW - EXTRA SMALL
+   ========================================= */
+
+.chatbot-widget {
+  position: fixed;
+  right: 15px;
+  bottom: 15px;
+  width: 230px;
+  height: 300px;
   background: #ffffff;
-  border-radius: 24px;
+  border-radius: 12px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  box-shadow: 0 15px 50px rgba(0, 0, 0, 0.12);
-  border: 1px solid rgba(15, 118, 110, 0.12);
+  z-index: 9999;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.22);
+  border: 1px solid rgba(15, 118, 110, 0.15);
 }
 
-/* HEADER */
+
+/* =========================================
+   HEADER
+   ========================================= */
 
 .chatbot-header {
   background: #0f766e;
   color: #ffffff;
-  padding: 22px 28px;
+  padding: 8px 10px;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -37,42 +61,67 @@
 
 .chatbot-header h2 {
   margin: 0;
-  font-size: 22px;
+  font-size: 12px;
   font-weight: 700;
 }
 
 .chatbot-header p {
-  margin: 5px 0 0;
-  font-size: 13px;
+  margin: 1px 0 0;
+  font-size: 8px;
   opacity: 0.85;
+}
+
+.chatbot-header-right {
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .chatbot-status {
   display: flex;
   align-items: center;
-  gap: 7px;
-  font-size: 13px;
+  gap: 3px;
+  font-size: 8px;
 }
 
 .chatbot-status span {
-  width: 9px;
-  height: 9px;
+  width: 5px;
+  height: 5px;
   background: #7cffc4;
   border-radius: 50%;
 }
 
-/* MESSAGES */
+.chatbot-close {
+  width: 21px;
+  height: 21px;
+  border: none;
+  background: transparent;
+  color: #ffffff;
+  font-size: 17px;
+  line-height: 1;
+  cursor: pointer;
+  border-radius: 50%;
+}
+
+.chatbot-close:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+
+/* =========================================
+   MESSAGES
+   ========================================= */
 
 .chatbot-messages {
   flex: 1;
-  padding: 28px;
+  padding: 7px;
   overflow-y: auto;
   background: #fcfbf8;
 }
 
 .chat-message {
   display: flex;
-  margin-bottom: 16px;
+  margin-bottom: 6px;
 }
 
 .user-message {
@@ -84,76 +133,78 @@
 }
 
 .message-bubble {
-  max-width: 72%;
-  padding: 13px 17px;
-  border-radius: 16px;
-  font-size: 14px;
-  line-height: 1.6;
+  max-width: 80%;
+  padding: 5px 7px;
+  border-radius: 9px;
+  font-size: 9px;
+  line-height: 1.35;
   white-space: pre-wrap;
 }
 
 .user-message .message-bubble {
   background: #0f766e;
   color: #ffffff;
-  border-bottom-right-radius: 4px;
+  border-bottom-right-radius: 3px;
 }
 
 .ai-message .message-bubble {
   background: #ffffff;
   color: #222222;
   border: 1px solid #e7e2d9;
-  border-bottom-left-radius: 4px;
+  border-bottom-left-radius: 3px;
 }
 
-/* WELCOME */
+
+/* =========================================
+   WELCOME
+   ========================================= */
 
 .chatbot-welcome {
   text-align: center;
-  max-width: 500px;
-  margin: 70px auto;
+  max-width: 200px;
+  margin: 12px auto;
 }
 
 .ai-icon {
-  width: 65px;
-  height: 65px;
-  margin: 0 auto 18px;
+  width: 32px;
+  height: 32px;
+  margin: 0 auto 6px;
   background: #0f766e;
   color: #ffffff;
   border-radius: 50%;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 28px;
+  font-size: 14px;
 }
 
 .chatbot-welcome h3 {
-  margin-bottom: 10px;
-  font-size: 24px;
+  margin-bottom: 3px;
+  font-size: 12px;
   color: #1f2937;
 }
 
 .chatbot-welcome p {
   color: #6b7280;
-  line-height: 1.6;
-  font-size: 14px;
+  line-height: 1.3;
+  font-size: 8px;
 }
 
 .suggestions {
   display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-top: 25px;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 7px;
 }
 
 .suggestions button {
   border: 1px solid #d8e5e3;
   background: #ffffff;
   color: #0f766e;
-  padding: 9px 14px;
-  border-radius: 20px;
+  padding: 4px 6px;
+  border-radius: 11px;
   cursor: pointer;
-  font-size: 13px;
+  font-size: 8px;
   transition: 0.2s ease;
 }
 
@@ -162,23 +213,27 @@
   color: #ffffff;
 }
 
-/* INPUT */
+
+/* =========================================
+   INPUT
+   ========================================= */
 
 .chatbot-input-area {
-  padding: 18px;
+  padding: 5px;
   background: #ffffff;
   border-top: 1px solid #eee9e0;
   display: flex;
-  gap: 10px;
+  gap: 4px;
 }
 
 .chatbot-input-area input {
   flex: 1;
+  min-width: 0;
   border: 1px solid #ddd8cf;
-  border-radius: 14px;
-  padding: 13px 16px;
+  border-radius: 7px;
+  padding: 5px 7px;
   outline: none;
-  font-size: 14px;
+  font-size: 9px;
 }
 
 .chatbot-input-area input:focus {
@@ -186,12 +241,12 @@
 }
 
 .chatbot-input-area button {
-  width: 48px;
+  width: 27px;
   border: none;
-  border-radius: 14px;
+  border-radius: 7px;
   background: #0f766e;
   color: #ffffff;
-  font-size: 20px;
+  font-size: 11px;
   cursor: pointer;
   transition: 0.2s ease;
 }
@@ -205,17 +260,20 @@
   cursor: not-allowed;
 }
 
-/* TYPING */
+
+/* =========================================
+   TYPING
+   ========================================= */
 
 .typing {
   display: flex;
-  gap: 5px;
+  gap: 3px;
   align-items: center;
 }
 
 .typing span {
-  width: 6px;
-  height: 6px;
+  width: 3px;
+  height: 3px;
   background: #0f766e;
   border-radius: 50%;
   animation: typing 1.2s infinite ease-in-out;
@@ -238,48 +296,45 @@
   }
 
   30% {
-    transform: translateY(-5px);
+    transform: translateY(-3px);
     opacity: 1;
   }
 }
 
-/* MOBILE */
+
+/* =========================================
+   MOBILE
+   ========================================= */
 
 @media (max-width: 600px) {
-  .chatbot-page {
-    padding: 0;
-  }
-
-  .chatbot-container {
-    height: calc(100vh - 70px);
-    border-radius: 0;
-  }
-
-  .chatbot-header {
-    padding: 18px;
-  }
-
-  .chatbot-messages {
-    padding: 18px;
-  }
-
-  .message-bubble {
-    max-width: 85%;
-  }
-
-  .chatbot-welcome {
-    margin: 50px auto;
-  }
-
-  .chatbot-welcome h3 {
+  .chatbot-floating-button {
+    right: 14px;
+    bottom: 14px;
+    width: 48px;
+    height: 48px;
     font-size: 21px;
   }
 
-  .suggestions {
-    flex-direction: column;
+  .chatbot-widget {
+    right: 10px;
+    bottom: 10px;
+    width: 230px;
+    height: 300px;
+    max-width: calc(100vw - 20px);
+    max-height: calc(100vh - 40px);
+    border-radius: 12px;
   }
 
-  .suggestions button {
-    width: 100%;
+  .chatbot-header {
+    padding: 8px 9px;
+  }
+
+  .chatbot-messages {
+    padding: 7px;
+  }
+
+  .message-bubble {
+    max-width: 82%;
+    font-size: 9px;
   }
 }

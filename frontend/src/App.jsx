@@ -46,6 +46,7 @@ function App() {
         <Route path="/recommendations" element={<CreateRecommendations />} />
         <Route path="/chatbot" element={<Chatbot />} />
       </Routes>
+       <Chatbot/>
       <Footer />
     </BrowserRouter>
   );
