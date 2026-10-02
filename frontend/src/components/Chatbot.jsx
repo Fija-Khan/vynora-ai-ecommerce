@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./chatbot.css";
@@ -35,36 +36,52 @@ const Chatbot = () => {
 
       setConversation(response.data);
       setMessages([]);
+
+      return response.data;
     } catch (error) {
       console.error("Conversation creation error:", error);
+      return null;
     }
   };
 
   const sendMessage = async (e) => {
     e.preventDefault();
 
-    if (!input.trim() || !conversation || loading) {
+    const userMessage = input.trim();
+
+    if (!userMessage || loading) {
       return;
     }
 
-    const userMessage = input.trim();
     setInput("");
-
-    setMessages((prev) => [
-      ...prev,
-      {
-        role: "user",
-        message: userMessage,
-      },
-    ]);
-
     setLoading(true);
 
     try {
+      // Create conversation if it does not exist
+      let currentConversation = conversation;
+
+      if (!currentConversation) {
+        currentConversation = await createConversation();
+
+        if (!currentConversation) {
+          throw new Error("Conversation could not be created.");
+        }
+      }
+
+      // Show user message immediately
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "user",
+          message: userMessage,
+        },
+      ]);
+
+      // Send message to backend
       await axios.post(
         `${API_URL}/messages/`,
         {
-          conversation: conversation.id,
+          conversation: currentConversation.id,
           message: userMessage,
         },
         {
@@ -74,8 +91,9 @@ const Chatbot = () => {
         }
       );
 
+      // Get updated messages
       const response = await axios.get(
-        `${API_URL}/messages/?conversation=${conversation.id}`,
+        `${API_URL}/messages/?conversation=${currentConversation.id}`,
         {
           headers: {
             Authorization: `Bearer ${accessToken}`,
@@ -84,12 +102,14 @@ const Chatbot = () => {
       );
 
       const conversationMessages = response.data.filter(
-        (msg) => msg.conversation === conversation.id
+        (msg) => msg.conversation === currentConversation.id
       );
 
       setMessages(conversationMessages);
     } catch (error) {
       console.error("Message error:", error);
+
+      console.error("Response:", error.response?.data);
 
       setMessages((prev) => [
         ...prev,
@@ -120,6 +140,7 @@ const Chatbot = () => {
       {/* Chat Window */}
       {isOpen && (
         <div className="chatbot-widget">
+
           {/* Header */}
           <div className="chatbot-header">
             <div>
@@ -145,6 +166,7 @@ const Chatbot = () => {
 
           {/* Messages */}
           <div className="chatbot-messages">
+
             {messages.length === 0 && (
               <div className="chatbot-welcome">
                 <div className="ai-icon">✦</div>
@@ -157,6 +179,7 @@ const Chatbot = () => {
                 </p>
 
                 <div className="suggestions">
+
                   <button
                     type="button"
                     onClick={() =>
@@ -177,10 +200,13 @@ const Chatbot = () => {
 
                   <button
                     type="button"
-                    onClick={() => setInput("How can you help me?")}
+                    onClick={() =>
+                      setInput("How can you help me?")
+                    }
                   >
                     How can you help?
                   </button>
+
                 </div>
               </div>
             )}
@@ -189,10 +215,14 @@ const Chatbot = () => {
               <div
                 key={msg.id || index}
                 className={`chat-message ${
-                  msg.role === "user" ? "user-message" : "ai-message"
+                  msg.role === "user"
+                    ? "user-message"
+                    : "ai-message"
                 }`}
               >
-                <div className="message-bubble">{msg.message}</div>
+                <div className="message-bubble">
+                  {msg.message}
+                </div>
               </div>
             ))}
 
@@ -205,10 +235,14 @@ const Chatbot = () => {
                 </div>
               </div>
             )}
+
           </div>
 
           {/* Input */}
-          <form className="chatbot-input-area" onSubmit={sendMessage}>
+          <form
+            className="chatbot-input-area"
+            onSubmit={sendMessage}
+          >
             <input
               type="text"
               placeholder="Ask Vynora AI anything..."
@@ -220,10 +254,12 @@ const Chatbot = () => {
             <button
               type="submit"
               disabled={loading || !input.trim()}
+              aria-label="Send message"
             >
               ➤
             </button>
           </form>
+
         </div>
       )}
     </>
