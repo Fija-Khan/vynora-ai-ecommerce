@@ -1,16 +1,17 @@
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 
 from .models import ChatConversation, ChatMessage
-from .serializers import (
-    ChatConversationSerializer,
-    ChatMessageSerializer,
+from .serializers import ChatConversationSerializer, ChatMessageSerializer
+from .gemini_service import (
+    generate_ai_response,
+    extract_product_criteria,
 )
-from .gemini_service import generate_ai_response
+from .product_service import search_products
 
 
 class ChatConversationListCreateView(generics.ListCreateAPIView):
-
     serializer_class = ChatConversationSerializer
     permission_classes = [IsAuthenticated]
 
@@ -26,7 +27,6 @@ class ChatConversationListCreateView(generics.ListCreateAPIView):
 
 
 class ChatConversationDetailView(generics.RetrieveDestroyAPIView):
-
     serializer_class = ChatConversationSerializer
     permission_classes = [IsAuthenticated]
 
@@ -37,7 +37,6 @@ class ChatConversationDetailView(generics.RetrieveDestroyAPIView):
 
 
 class ChatMessageListCreateView(generics.ListCreateAPIView):
-
     serializer_class = ChatMessageSerializer
     permission_classes = [IsAuthenticated]
 
@@ -46,21 +45,48 @@ class ChatMessageListCreateView(generics.ListCreateAPIView):
             conversation__user=self.request.user
         )
 
-    def perform_create(self, serializer):
-
-        # Save user's message
-        user_message = serializer.save(
-            role='user'
+    def create(self, request, *args, **kwargs):
+        user_message = ChatMessage.objects.create(
+            conversation_id=request.data.get("conversation"),
+            role="user",
+            message=request.data.get("message"),
         )
 
-        # Generate AI response using Gemini
-        ai_response = generate_ai_response(
+        criteria = extract_product_criteria(
             user_message.message
         )
 
-        # Save AI response
+        products = search_products(criteria)
+
+        ai_response = generate_ai_response(
+            user_message.message,
+            products
+        )
+
         ChatMessage.objects.create(
             conversation=user_message.conversation,
-            role='assistant',
+            role="assistant",
             message=ai_response
         )
+
+        product_data = []
+
+        for product in products:
+            product_data.append({
+                "id": product.id,
+                "name": product.name,
+                "brand": product.brand,
+                "price": float(product.price),
+                "discount_percent": product.discount_percent,
+                "image": (
+                    product.image.url
+                    if product.image
+                    else None
+                ),
+                "category": product.category.name,
+            })
+
+        return Response({
+            "message": ai_response,
+            "products": product_data,
+        })
